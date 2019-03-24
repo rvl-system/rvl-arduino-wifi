@@ -22,7 +22,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #include <WiFiUdp.h>
 #include <RVLMessaging.h>
 #include <RVLLogging.h>
-#include "./RVL-ESP.h"
+#include "./rvl_esp/interface.h"
 #include "./rvl_esp/esp_platform.h"
 
 namespace Interface {
@@ -35,7 +35,6 @@ uint8_t state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 
-ESPPlatform::ESPLogging* loggingInterface;
 ESPPlatform::ESPPlatform* platform;
 ESPPlatform::ESPTransport* transport;
 RVLLogging* logger;
@@ -45,19 +44,34 @@ const char* password;
 uint16_t port;
 void (*connectionStateChangeCallback)(bool connected) = NULL;
 
-void init(const char* newssid, const char* newpassword, uint16_t newport, uint16_t logBaudrate, RVLLogLevel logLevel) {
+bool networkInitialized = false;
+bool loggingInitialized = false;
+
+void initNetwork(const char* newssid, const char* newpassword, uint16_t newport) {
   ssid = newssid;
   password = newpassword;
   port = newport;
 
   WiFi.setSleepMode(WIFI_NONE_SLEEP);   // Helps keep LEDs from flickering
 
-  loggingInterface = new ESPPlatform::ESPLogging(logBaudrate);
   platform = new ESPPlatform::ESPPlatform();
   transport = new ESPPlatform::ESPTransport(&udp, newport);
-  logger = new RVLLogging(loggingInterface, static_cast<RVLLogLevel>(logLevel));
 
-  RVLMessagingInit(platform, transport, logger);
+  if (loggingInitialized) {
+    RVLMessagingInit(platform, transport, logger);
+  }
+  networkInitialized = true;
+}
+
+RVLLogging* initLogging(RVLLogLevel logLevel) {
+  logger = new RVLLogging(new ESPPlatform::ESPLogging(), logLevel);
+
+  if (networkInitialized) {
+    RVLMessagingInit(platform, transport, logger);
+  }
+  loggingInitialized = true;
+
+  return logger;
 }
 
 void loop() {
@@ -96,7 +110,7 @@ void loop() {
 }
 
 void setMode(RVLDeviceMode mode) {
-  platform->setDeviceMode(RVLDeviceMode::Controller);
+  platform->setDeviceMode(mode);
 }
 
 void setWaveSettings(RVLWaveSettings* settings) {
@@ -105,10 +119,6 @@ void setWaveSettings(RVLWaveSettings* settings) {
 
 uint32_t getAnimationClock() {
   return platform->getAnimationClock();
-}
-
-RVLLogging* getLogger() {
-  return logger;
 }
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {

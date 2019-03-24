@@ -35,18 +35,33 @@ void onConnectionStateChanged(bool connected) {
 }
 
 void setup() {
-  RVLESPInit(
-    "network-name",
-    "pass-to-network",
-    4978,
-    112500,
-    RVLLogLevel::Debug
-  );
-  logger = RVLSESPGetLogger();
-  RVLESPSetMode(RVLDeviceMode::Controller);
+  Serial.begin(115200);
+  Serial.println();
+
+  RVLESPInitNetwork("RaverLights", "4&7EWf7p3h222;$+wg9]&4dN,dGh4^@}", 4978);
+  logger = RVLESPInitLogging(RVLLogLevel::Debug);
+
+  RVLDeviceMode mode = RVLDeviceMode::Receiver;
+  RVLESPSetMode(mode);
 
   RVLESPOnWaveSettingsUpdate(onSettingsUpdate);
   RVLESPOnConnectionStateChanged(onConnectionStateChanged);
+
+  logger->info("Initialized");
+
+  if (mode == RVLDeviceMode::Controller) {
+    RVLWaveSettings newSettings;
+    newSettings.waves[0].h.b = 190;
+    newSettings.waves[0].s.b = 255;
+    newSettings.waves[0].v.b = 255;
+    newSettings.waves[0].a.a = 255;
+    newSettings.waves[0].a.w_t = 2;
+    newSettings.waves[1].h.b = 80;
+    newSettings.waves[1].s.b = 255;
+    newSettings.waves[1].v.b = 255;
+    newSettings.waves[1].a.b = 255;
+    RVLESPSetWaveSettings(&newSettings);
+  }
 }
 
 void loop() {

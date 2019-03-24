@@ -28,7 +28,6 @@ namespace ESPPlatform {
 
 class ESPLogging : public RVLLoggingInterface {
  public:
-  ESPLogging(uint16_t baudrate);
   void print(const char *s);
   void println();
   void println(const char *s);

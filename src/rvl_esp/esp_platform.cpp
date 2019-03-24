@@ -26,10 +26,6 @@ namespace ESPPlatform {
 
 // Logging implementation
 
-ESPLogging::ESPLogging(uint16_t baudrate) {
-  Serial.begin(baudrate);
-}
-
 void ESPLogging::print(const char *s) {
   Serial.print(s);
 }

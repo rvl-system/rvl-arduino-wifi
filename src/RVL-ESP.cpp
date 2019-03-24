@@ -20,8 +20,12 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #include "./RVL-ESP.h"
 #include "./rvl_esp/interface.h"
 
-void RVLESPInit(const char* newssid, const char* newpassword, uint16_t newport, uint16_t logBaudrate, RVLLogLevel logLevel) {
-  Interface::init(newssid, newpassword, newport, logBaudrate, logLevel);
+void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port) {
+  Interface::initNetwork(ssid, password, port);
+}
+
+RVLLogging* RVLESPInitLogging(RVLLogLevel logLevel) {
+  return Interface::initLogging(logLevel);
 }
 
 void RVLESPLoop() {
@@ -38,10 +42,6 @@ void RVLESPSetWaveSettings(RVLWaveSettings* settings) {
 
 uint32_t RVLESPGetAnimationClock() {
   return Interface::getAnimationClock();
-}
-
-RVLLogging* RVLSESPGetLogger() {
-  return Interface::getLogger();
 }
 
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {

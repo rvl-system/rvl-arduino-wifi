@@ -16,4 +16,4 @@
 # You should have received a copy of the GNU General Public License
 # along with Raver Lights.  If not, see <http://www.gnu.org/licenses/>.
 
-cpplint --quiet --linelength=120 --recursive --repository=src src/* && platformio run
+esptool.py -p /dev/ttyS3 -b 921600 write_flash 0x0 .pioenvs/esp/firmware.bin

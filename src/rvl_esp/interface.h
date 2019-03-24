@@ -22,18 +22,18 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <RVLMessaging.h>
 #include <RVLLogging.h>
-#include "stdint.h"
+#include <stdint.h>
 
 namespace Interface {
 
-void init(const char* ssid, const char* password, uint16_t port, uint16_t logBaudrate, RVLLogLevel logLevel);
+void initNetwork(const char* ssid, const char* password, uint16_t port);
+RVLLogging* initLogging(RVLLogLevel logLevel);
 void loop();
 
 void setMode(RVLDeviceMode mode);
 void setWaveSettings(RVLWaveSettings* settings);
 
 uint32_t getAnimationClock();
-RVLLogging* getLogger();
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
