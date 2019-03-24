@@ -24,8 +24,6 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ESPPlatform {
 
-uint16_t port = 0;
-
 // Logging implementation
 
 ESPLogging::ESPLogging(uint16_t baudrate) {
@@ -54,68 +52,79 @@ uint16_t ESPPlatform::getDeviceId() {
   return WiFi.localIP()[3];
 }
 
+void ESPPlatform::onWaveSettingsUpdated() {
+  if (this->waveSettingsUpdatedCallback != NULL) {
+    this->waveSettingsUpdatedCallback(this->getWaveSettings());
+  }
+}
+
+void ESPPlatform::onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
+  this->waveSettingsUpdatedCallback = callback;
+}
+
 // Transport implementation
 
-ESPTransport::ESPTransport(uint16_t newPort) {
-  port = newPort;
+ESPTransport::ESPTransport(WiFiUDP* udp, uint16_t port) {
+  this->udp = udp;
+  this->port = port;
 }
 
 void ESPTransport::beginWrite() {
   auto ip = WiFi.localIP();
   ip[3] = 255;
-  udp.beginPacket(ip, port);
+  this->udp->beginPacket(ip, this->port);
 }
 
 void ESPTransport::write8(uint8_t data) {
-  udp.write(data);
+  this->udp->write(data);
 }
 
 void ESPTransport::write16(uint16_t data) {
-  udp.write(data >> 8);
-  udp.write(data & 0xFF);
+  this->udp->write(data >> 8);
+  this->udp->write(data & 0xFF);
 }
 
 void ESPTransport::write32(uint32_t data) {
-  udp.write(data >> 24);
-  udp.write(data >> 16 & 0xFF);
-  udp.write(data >> 8 & 0xFF);
-  udp.write(data & 0xFF);
+  this->udp->write(data >> 24);
+  this->udp->write(data >> 16 & 0xFF);
+  this->udp->write(data >> 8 & 0xFF);
+  this->udp->write(data & 0xFF);
 }
 
 void ESPTransport::write(uint8_t* data, uint16_t length) {
-  udp.write(data, length);
+  this->udp->write(data, length);
 }
 
 void ESPTransport::endWrite() {
-  udp.endPacket();
+  this->udp->endPacket();
 }
 
 uint16_t ESPTransport::parsePacket() {
-  return udp.parsePacket();
+  return this->udp->parsePacket();
 }
 
 uint8_t ESPTransport::read8() {
-  return udp.read();
+  return this->udp->read();
 }
 
 uint16_t ESPTransport::read16() {
   uint16_t val = 0;
-  val |= udp.read() << 8;
-  val |= udp.read();
+  val |= this->udp->read() << 8;
+  val |= this->udp->read();
   return val;
 }
 
 uint32_t ESPTransport::read32() {
   uint32_t val = 0;
-  val |= udp.read() << 24;
-  val |= udp.read() << 16;
-  val |= udp.read() << 8;
-  val |= udp.read();
+  val |= this->udp->read() << 24;
+  val |= this->udp->read() << 16;
+  val |= this->udp->read() << 8;
+  val |= this->udp->read();
   return val;
 }
 
 void ESPTransport::read(uint8_t* buffer, uint16_t length) {
-  udp.read(buffer, length);
+  this->udp->read(buffer, length);
 }
 
 }  // namespace ESPPlatform

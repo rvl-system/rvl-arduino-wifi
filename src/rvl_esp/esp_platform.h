@@ -20,6 +20,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_ESP_ESP_PLATFORM_H_
 #define RVL_ESP_ESP_PLATFORM_H_
 
+#include <WiFiUdp.h>
 #include <RVLLogging.h>
 #include <RVLMessaging.h>
 
@@ -34,14 +35,25 @@ class ESPLogging : public RVLLoggingInterface {
 };
 
 class ESPPlatform : public RVLPlatformInterface {
+ private:
+  void (*waveSettingsUpdatedCallback)(RVLWaveSettings* settings) = NULL;
+
+ protected:
+  void onWaveSettingsUpdated();
+
  public:
   uint32_t getLocalTime();
   uint16_t getDeviceId();
+  void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 };
 
 class ESPTransport : public RVLTransportInterface {
+ private:
+  WiFiUDP* udp;
+  uint16_t port;
+
  public:
-  ESPTransport(uint16_t port);
+  ESPTransport(WiFiUDP* udp, uint16_t port);
   void beginWrite();
   void write8(uint8_t data);
   void write16(uint16_t data);

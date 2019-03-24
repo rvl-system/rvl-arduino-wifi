@@ -17,17 +17,36 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../src/RVL-ESP.h"
+#include <Arduino.h>
+#include "./RVL-ESP.h"
+
+RVLLogging* logger;
+
+void onSettingsUpdate(RVLWaveSettings* newSettings) {
+  logger->info("Wave settings updated");
+}
+
+void onConnectionStateChanged(bool connected) {
+  if (connected) {
+    logger->info("Connected to WiFi");
+  } else {
+    logger->info("Disconnected to WiFi");
+  }
+}
 
 void setup() {
-  RVLESPinit(
+  RVLESPInit(
     "network-name",
     "pass-to-network",
     4978,
     112500,
-    RVLLogLevel::debug
+    RVLLogLevel::Debug
   );
-  RVLESPSetMode(RVLDeviceMode::controller);
+  logger = RVLSESPGetLogger();
+  RVLESPSetMode(RVLDeviceMode::Controller);
+
+  RVLESPOnWaveSettingsUpdate(onSettingsUpdate);
+  RVLESPOnConnectionStateChanged(onConnectionStateChanged);
 }
 
 void loop() {

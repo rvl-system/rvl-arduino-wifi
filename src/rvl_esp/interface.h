@@ -17,23 +17,27 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_ESP_H_
-#define RVL_ESP_H_
+#ifndef RVL_ESP_INTERFACE_H_
+#define RVL_ESP_INTERFACE_H_
 
 #include <RVLMessaging.h>
 #include <RVLLogging.h>
 #include "stdint.h"
 
-void RVLESPInit(const char* ssid, const char* password, uint16_t port, uint16_t logBaudrate, RVLLogLevel logLevel);
-void RVLESPLoop();
+namespace Interface {
 
-void RVLESPSetMode(RVLDeviceMode mode);
-void RVLESPSetWaveSettings(RVLWaveSettings* settings);
+void init(const char* ssid, const char* password, uint16_t port, uint16_t logBaudrate, RVLLogLevel logLevel);
+void loop();
 
-uint32_t RVLESPGetAnimationClock();
-RVLLogging* RVLSESPGetLogger();
+void setMode(RVLDeviceMode mode);
+void setWaveSettings(RVLWaveSettings* settings);
 
-void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
-void RVLESPOnConnectionStateChanged(void (*callback)(bool connected));
+uint32_t getAnimationClock();
+RVLLogging* getLogger();
 
-#endif
+void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
+void onConnectionStateChanged(void (*callback)(bool connected));
+
+}  // namespace Interface
+
+#endif  // RVL_ESP_INTERFACE_H_

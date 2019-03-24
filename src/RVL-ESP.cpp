@@ -18,33 +18,36 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "./RVL-ESP.h"
+#include "./rvl_esp/interface.h"
 
-// WASMPlatform::WASMLogging* loggingInterface;
-// WASMPlatform::WASMPlatform* platform;
-// WASMPlatform::WASMTransport* transport;
-// RVLLogging* logger;
-
-void init(const char* ssid, const char* password, uint16_t port, uint16_t logBaudrate, RVLLogLevel logLevel) {
-  // loggingInterface = new WASMPlatform::WASMLogging();
-  // platform = new WASMPlatform::WASMPlatform();
-  // transport = new WASMPlatform::WASMTransport();
-  // logger = new RVLLogging(loggingInterface, static_cast<RVLLogLevel>(logLevel));
-  // if (isController) {
-  //   platform->setDeviceMode(RVLDeviceMode::Controller);
-  // } else {
-  //   platform->setDeviceMode(RVLDeviceMode::Receiver);
-  // }
-  // RVLMessagingInit(platform, transport, logger);
+void RVLESPInit(const char* newssid, const char* newpassword, uint16_t newport, uint16_t logBaudrate, RVLLogLevel logLevel) {
+  Interface::init(newssid, newpassword, newport, logBaudrate, logLevel);
 }
 
 void RVLESPLoop() {
-
+  Interface::loop();
 }
 
 void RVLESPSetMode(RVLDeviceMode mode) {
-
+  Interface::setMode(mode);
 }
 
 void RVLESPSetWaveSettings(RVLWaveSettings* settings) {
+  Interface::setWaveSettings(settings);
+}
 
+uint32_t RVLESPGetAnimationClock() {
+  return Interface::getAnimationClock();
+}
+
+RVLLogging* RVLSESPGetLogger() {
+  return Interface::getLogger();
+}
+
+void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
+  Interface::onWaveSettingsUpdated(callback);
+}
+
+void RVLESPOnConnectionStateChanged(void (*callback)(bool connected)) {
+  Interface::onConnectionStateChanged(callback);
 }
