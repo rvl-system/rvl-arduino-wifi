@@ -48,6 +48,10 @@ uint16_t ESPPlatform::getDeviceId() {
   return WiFi.localIP()[3];
 }
 
+bool ESPPlatform::isNetworkAvailable() {
+  return WiFi.status() == WL_CONNECTED;
+}
+
 void ESPPlatform::onWaveSettingsUpdated() {
   if (this->waveSettingsUpdatedCallback != NULL) {
     this->waveSettingsUpdatedCallback(this->getWaveSettings());

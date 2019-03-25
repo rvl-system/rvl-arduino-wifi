@@ -32,8 +32,16 @@ void RVLESPLoop() {
   Interface::loop();
 }
 
+RVLDeviceMode RVLESPGetMode() {
+  return Interface::getMode();
+}
+
 void RVLESPSetMode(RVLDeviceMode mode) {
   Interface::setMode(mode);
+}
+
+RVLWaveSettings* RVLESPGetWaveSettings() {
+  return Interface::getWaveSettings();
 }
 
 void RVLESPSetWaveSettings(RVLWaveSettings* settings) {
@@ -50,4 +58,8 @@ void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
 
 void RVLESPOnConnectionStateChanged(void (*callback)(bool connected)) {
   Interface::onConnectionStateChanged(callback);
+}
+
+void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode)) {
+  Interface::onModeChanged(callback);
 }

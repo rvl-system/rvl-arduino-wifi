@@ -43,6 +43,7 @@ const char* ssid;
 const char* password;
 uint16_t port;
 void (*connectionStateChangeCallback)(bool connected) = NULL;
+void (*deviceModeChangeCallback)(RVLDeviceMode mode) = NULL;
 
 bool networkInitialized = false;
 bool loggingInitialized = false;
@@ -104,13 +105,24 @@ void loop() {
         }
         break;
       }
-      RVLMessagingLoop();
       break;
   }
+  RVLMessagingLoop();
+}
+
+RVLDeviceMode getMode() {
+  return platform->getDeviceMode();
 }
 
 void setMode(RVLDeviceMode mode) {
   platform->setDeviceMode(mode);
+  if (deviceModeChangeCallback != NULL) {
+    deviceModeChangeCallback(mode);
+  }
+}
+
+RVLWaveSettings* getWaveSettings() {
+  return platform->getWaveSettings();
 }
 
 void setWaveSettings(RVLWaveSettings* settings) {
@@ -127,6 +139,10 @@ void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
 
 void onConnectionStateChanged(void (*callback)(bool connected)) {
   connectionStateChangeCallback = callback;
+}
+
+void onModeChanged(void (*callback)(RVLDeviceMode mode)) {
+  deviceModeChangeCallback = callback;
 }
 
 }  // namespace Interface

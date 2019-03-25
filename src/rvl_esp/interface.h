@@ -30,13 +30,17 @@ void initNetwork(const char* ssid, const char* password, uint16_t port);
 RVLLogging* initLogging(RVLLogLevel logLevel);
 void loop();
 
+RVLDeviceMode getMode();
 void setMode(RVLDeviceMode mode);
+
+RVLWaveSettings* getWaveSettings();
 void setWaveSettings(RVLWaveSettings* settings);
 
 uint32_t getAnimationClock();
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
+void onModeChanged(void (*callback)(RVLDeviceMode mode));
 
 }  // namespace Interface
 

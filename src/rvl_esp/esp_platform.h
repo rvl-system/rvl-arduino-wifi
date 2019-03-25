@@ -43,6 +43,8 @@ class ESPPlatform : public RVLPlatformInterface {
  public:
   uint32_t getLocalTime();
   uint16_t getDeviceId();
+  bool isNetworkAvailable();
+
   void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 };
 

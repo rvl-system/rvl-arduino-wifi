@@ -28,12 +28,16 @@ void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port);
 RVLLogging* RVLESPInitLogging(RVLLogLevel logLevel);
 void RVLESPLoop();
 
+RVLDeviceMode RVLESPGetMode();
 void RVLESPSetMode(RVLDeviceMode mode);
+
+RVLWaveSettings* RVLESPGetWaveSettings();
 void RVLESPSetWaveSettings(RVLWaveSettings* settings);
 
 uint32_t RVLESPGetAnimationClock();
 
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
 void RVLESPOnConnectionStateChanged(void (*callback)(bool connected));
+void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode));
 
 #endif  // RVL_ESP_H_
