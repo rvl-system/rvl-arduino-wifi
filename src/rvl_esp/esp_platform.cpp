@@ -53,12 +53,13 @@ bool ESPPlatform::isNetworkAvailable() {
 }
 
 void ESPPlatform::onWaveSettingsUpdated() {
+  RVLPlatformInterface::onWaveSettingsUpdated();
   if (this->waveSettingsUpdatedCallback != NULL) {
     this->waveSettingsUpdatedCallback(this->getWaveSettings());
   }
 }
 
-void ESPPlatform::onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
+void ESPPlatform::setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings)) {
   this->waveSettingsUpdatedCallback = callback;
 }
 

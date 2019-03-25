@@ -134,7 +134,7 @@ uint32_t getAnimationClock() {
 }
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
-  platform->onWaveSettingsUpdated(callback);
+  platform->setOnWaveSettingsUpdatedCallback(callback);
 }
 
 void onConnectionStateChanged(void (*callback)(bool connected)) {

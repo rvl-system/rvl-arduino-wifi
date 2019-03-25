@@ -45,7 +45,7 @@ class ESPPlatform : public RVLPlatformInterface {
   uint16_t getDeviceId();
   bool isNetworkAvailable();
 
-  void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
+  void setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings));
 };
 
 class ESPTransport : public RVLTransportInterface {
