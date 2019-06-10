@@ -36,6 +36,9 @@ void RVLESPSetWaveSettings(RVLWaveSettings* settings);
 
 uint32_t RVLESPGetAnimationClock();
 
+uint8_t RVLESPGetChannel();
+void RVLESPSetChannel(uint8_t channel);
+
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
 void RVLESPOnConnectionStateChanged(void (*callback)(bool connected));
 void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode));

@@ -38,6 +38,9 @@ void setWaveSettings(RVLWaveSettings* settings);
 
 uint32_t getAnimationClock();
 
+uint8_t getChannel();
+void setChannel(uint8_t channel);
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
 void onModeChanged(void (*callback)(RVLDeviceMode mode));

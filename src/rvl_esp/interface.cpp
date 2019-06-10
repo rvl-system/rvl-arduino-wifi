@@ -133,6 +133,14 @@ uint32_t getAnimationClock() {
   return platform->getAnimationClock();
 }
 
+uint8_t getChannel() {
+  return platform->getChannel();
+}
+
+void setChannel(uint8_t channel) {
+  platform->setChannel(channel);
+}
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
   platform->setOnWaveSettingsUpdatedCallback(callback);
 }

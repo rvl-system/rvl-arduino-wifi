@@ -52,6 +52,14 @@ uint32_t RVLESPGetAnimationClock() {
   return Interface::getAnimationClock();
 }
 
+uint8_t RVLESPGetChannel() {
+  return Interface::getChannel();
+}
+
+void RVLESPSetChannel(uint8_t channel) {
+  Interface::setChannel(channel);
+}
+
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
   Interface::onWaveSettingsUpdated(callback);
 }
