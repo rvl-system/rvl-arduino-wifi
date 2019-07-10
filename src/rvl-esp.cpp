@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./RVL-ESP.h"
+#include "./rvl-esp.h"
 #include "./rvl_esp/interface.h"
 
 void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port) {

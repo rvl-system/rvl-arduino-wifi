@@ -20,8 +20,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <RVLMessaging.h>
-#include <RVLLogging.h>
+#include <rvl.h>
 #include "./rvl_esp/interface.h"
 #include "./rvl_esp/esp_platform.h"
 

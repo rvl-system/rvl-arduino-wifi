@@ -20,8 +20,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_ESP_INTERFACE_H_
 #define RVL_ESP_INTERFACE_H_
 
-#include <RVLMessaging.h>
-#include <RVLLogging.h>
+#include <rvl.h>
 #include <stdint.h>
 
 namespace Interface {

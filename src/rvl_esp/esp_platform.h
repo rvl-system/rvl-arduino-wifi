@@ -21,8 +21,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_ESP_ESP_PLATFORM_H_
 
 #include <WiFiUdp.h>
-#include <RVLLogging.h>
-#include <RVLMessaging.h>
+#include <rvl.h>
 
 namespace ESPPlatform {
 

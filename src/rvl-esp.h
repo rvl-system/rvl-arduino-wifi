@@ -20,8 +20,7 @@ along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_ESP_H_
 #define RVL_ESP_H_
 
-#include <RVLMessaging.h>
-#include <RVLLogging.h>
+#include <rvl.h>
 #include <stdint.h>
 
 void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port);
