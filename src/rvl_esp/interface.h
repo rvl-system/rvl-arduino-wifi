@@ -40,9 +40,17 @@ uint32_t getAnimationClock();
 uint8_t getChannel();
 void setChannel(uint8_t channel);
 
+bool getPowerState();
+void setPowerState(bool powerState);
+
+uint8_t getBrightness();
+void setBrightness(uint8_t brightness);
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
 void onModeChanged(void (*callback)(RVLDeviceMode mode));
+void onPowerStateChanged(void (*callback)(bool powerState));
+void onBrightnessChanged(void (*callback)(uint8_t brightness));
 
 }  // namespace Interface
 

@@ -60,6 +60,22 @@ void RVLESPSetChannel(uint8_t channel) {
   Interface::setChannel(channel);
 }
 
+bool RVLESPGetPowerState() {
+  return Interface::getPowerState();
+}
+
+void RVLESPSetPowerState(bool powerState) {
+  Interface::setPowerState(powerState);
+}
+
+uint8_t RVLESPGetBrightness() {
+  return Interface::getBrightness();
+}
+
+void RVLESPSetBrightness(uint8_t brightness) {
+  Interface::setBrightness(brightness);
+}
+
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
   Interface::onWaveSettingsUpdated(callback);
 }
@@ -70,4 +86,12 @@ void RVLESPOnConnectionStateChanged(void (*callback)(bool connected)) {
 
 void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode)) {
   Interface::onModeChanged(callback);
+}
+
+void RVLESPOnPowerStateChanged(void (*callback)(bool powerState)) {
+  Interface::onPowerStateChanged(callback);
+}
+
+void RVLESPOnBrightnessChanged(void (*callback)(uint8_t brightness)) {
+  Interface::onBrightnessChanged(callback);
 }

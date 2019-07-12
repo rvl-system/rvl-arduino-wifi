@@ -63,6 +63,28 @@ void ESPPlatform::setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSetti
   this->waveSettingsUpdatedCallback = callback;
 }
 
+void ESPPlatform::onPowerStateUpdated() {
+  RVLPlatformInterface::onPowerStateUpdated();
+  if (this->powerStateUpdatedCallback != NULL) {
+    this->powerStateUpdatedCallback(this->getPowerState());
+  }
+}
+
+void ESPPlatform::setOnPowerStateUpdatedCallback(void (*callback)(bool powerState)) {
+  this->powerStateUpdatedCallback = callback;
+}
+
+void ESPPlatform::onBrightnessUpdated() {
+  RVLPlatformInterface::onBrightnessUpdated();
+  if (this->brightnessUpdatedCallback) {
+    this->brightnessUpdatedCallback(this->getBrightness());
+  }
+}
+
+void ESPPlatform::setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness)) {
+  this->brightnessUpdatedCallback = callback;
+}
+
 // Transport implementation
 
 ESPTransport::ESPTransport(WiFiUDP* udp, uint16_t port) {

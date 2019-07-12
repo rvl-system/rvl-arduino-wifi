@@ -140,6 +140,22 @@ void setChannel(uint8_t channel) {
   platform->setChannel(channel);
 }
 
+bool getPowerState() {
+  return platform->getPowerState();
+}
+
+void setPowerState(bool powerState) {
+  platform->setPowerState(powerState);
+}
+
+uint8_t getBrightness() {
+  return platform->getBrightness();
+}
+
+void setBrightness(uint8_t brightness) {
+  platform->setBrightness(brightness);
+}
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
   platform->setOnWaveSettingsUpdatedCallback(callback);
 }
@@ -150,6 +166,14 @@ void onConnectionStateChanged(void (*callback)(bool connected)) {
 
 void onModeChanged(void (*callback)(RVLDeviceMode mode)) {
   deviceModeChangeCallback = callback;
+}
+
+void onPowerStateChanged(void (*callback)(bool powerState)) {
+  platform->setOnPowerStateUpdatedCallback(callback);
+}
+
+void onBrightnessChanged(void (*callback)(uint8_t brightness)) {
+  platform->setOnBrightnessUpdatedCallback(callback);
 }
 
 }  // namespace Interface

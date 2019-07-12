@@ -38,8 +38,16 @@ uint32_t RVLESPGetAnimationClock();
 uint8_t RVLESPGetChannel();
 void RVLESPSetChannel(uint8_t channel);
 
+bool RVLESPGetPowerState();
+void RVLESPSetPowerState(bool powerState);
+
+uint8_t RVLESPGetBrightness();
+void RVLESPSetBrightness(uint8_t brightness);
+
 void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
 void RVLESPOnConnectionStateChanged(void (*callback)(bool connected));
 void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode));
+void RVLESPOnPowerStateChanged(void (*callback)(bool powerState));
+void RVLESPOnBrightnessChanged(void (*callback)(uint8_t brightness));
 
 #endif  // RVL_ESP_H_

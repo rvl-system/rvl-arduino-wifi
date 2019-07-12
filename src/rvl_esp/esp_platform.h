@@ -35,9 +35,13 @@ class ESPLogging : public RVLLoggingInterface {
 class ESPPlatform : public RVLPlatformInterface {
  private:
   void (*waveSettingsUpdatedCallback)(RVLWaveSettings* settings) = NULL;
+  void (*powerStateUpdatedCallback)(bool powerState) = NULL;
+  void (*brightnessUpdatedCallback)(uint8_t brightness) = NULL;
 
  protected:
   void onWaveSettingsUpdated();
+  void onPowerStateUpdated();
+  void onBrightnessUpdated();
 
  public:
   uint32_t getLocalTime();
@@ -45,6 +49,8 @@ class ESPPlatform : public RVLPlatformInterface {
   bool isNetworkAvailable();
 
   void setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings));
+  void setOnPowerStateUpdatedCallback(void (*callback)(bool powerState));
+  void setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness));
 };
 
 class ESPTransport : public RVLTransportInterface {
