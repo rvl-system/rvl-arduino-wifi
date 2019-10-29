@@ -1,24 +1,24 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights ESP.
+This file is part of RVL Arduino.
 
-Raver Lights ESP is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights ESP is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./rvl-esp.h"
-#include "./rvl_esp/interface.h"
+#include "./rvl-arduino.h"
+#include "./rvl_arduino/interface.h"
 
 void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port) {
   Interface::initNetwork(ssid, password, port);

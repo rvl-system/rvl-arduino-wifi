@@ -1,28 +1,32 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights ESP.
+This file is part of RVL Arduino.
 
-Raver Lights ESP is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights ESP is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <Arduino.h>
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
+#else
+#include <WiFi.h>
+#endif
 #include <WiFiUdp.h>
-#include <rvl.h>
-#include "./rvl_esp/interface.h"
-#include "./rvl_esp/esp_platform.h"
+#include "./rvl/rvl.h"
+#include "./rvl_arduino/interface.h"
+#include "./rvl_arduino/arduino_platform.h"
 
 namespace Interface {
 
@@ -34,8 +38,8 @@ uint8_t state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 
-ESPPlatform::ESPPlatform* platform;
-ESPPlatform::ESPTransport* transport;
+ArduinoPlatform::ArduinoPlatform* platform;
+ArduinoPlatform::ArduinoTransport* transport;
 RVLLogging* logger;
 
 const char* ssid;
@@ -52,10 +56,12 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
   password = newpassword;
   port = newport;
 
+#ifdef ESP8266
   WiFi.setSleepMode(WIFI_NONE_SLEEP);   // Helps keep LEDs from flickering
+#endif
 
-  platform = new ESPPlatform::ESPPlatform();
-  transport = new ESPPlatform::ESPTransport(&udp, newport);
+  platform = new ArduinoPlatform::ArduinoPlatform();
+  transport = new ArduinoPlatform::ArduinoTransport(&udp, newport);
 
   if (loggingInitialized) {
     RVLMessagingInit(platform, transport, logger);
@@ -64,7 +70,7 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
 }
 
 RVLLogging* initLogging(RVLLogLevel logLevel) {
-  logger = new RVLLogging(new ESPPlatform::ESPLogging(), logLevel);
+  logger = new RVLLogging(new ArduinoPlatform::ArduinoLogging(), logLevel);
 
   if (networkInitialized) {
     RVLMessagingInit(platform, transport, logger);

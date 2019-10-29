@@ -1,38 +1,38 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights ESP.
+This file is part of Raver Lights Arduino.
 
-Raver Lights ESP is free software: you can redistribute it and/or modify
+Raver Lights Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights ESP is distributed in the hope that it will be useful,
+Raver Lights Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
+along with Raver Lights Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_ESP_ESP_PLATFORM_H_
-#define RVL_ESP_ESP_PLATFORM_H_
+#ifndef RVL_ARDUINO_ARDUINO_PLATFORM_H_
+#define RVL_ARDUINO_ARDUINO_PLATFORM_H_
 
 #include <WiFiUdp.h>
-#include <rvl.h>
+#include "./rvl/rvl.h"
 
-namespace ESPPlatform {
+namespace ArduinoPlatform {
 
-class ESPLogging : public RVLLoggingInterface {
+class ArduinoLogging : public RVLLoggingInterface {
  public:
   void print(const char *s);
   void println();
   void println(const char *s);
 };
 
-class ESPPlatform : public RVLPlatformInterface {
+class ArduinoPlatform : public RVLPlatformInterface {
  private:
   void (*waveSettingsUpdatedCallback)(RVLWaveSettings* settings) = NULL;
   void (*powerStateUpdatedCallback)(bool powerState) = NULL;
@@ -53,13 +53,13 @@ class ESPPlatform : public RVLPlatformInterface {
   void setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness));
 };
 
-class ESPTransport : public RVLTransportInterface {
+class ArduinoTransport : public RVLTransportInterface {
  private:
   WiFiUDP* udp;
   uint16_t port;
 
  public:
-  ESPTransport(WiFiUDP* udp, uint16_t port);
+  ArduinoTransport(WiFiUDP* udp, uint16_t port);
   void beginWrite();
   void write8(uint8_t data);
   void write16(uint16_t data);
@@ -74,6 +74,6 @@ class ESPTransport : public RVLTransportInterface {
   void read(uint8_t* buffer, uint16_t length);
 };
 
-}  // namespace ESPPlatform
+}  // namespace ArduinoPlatform
 
-#endif  // RVL_ESP_ESP_PLATFORM_H_
+#endif  // RVL_ARDUINO_ARDUINO_PLATFORM_H_

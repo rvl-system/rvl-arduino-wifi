@@ -1,27 +1,27 @@
 /*
 Copyright (c) Bryan Hughes <bryan@nebri.us>
 
-This file is part of Raver Lights ESP.
+This file is part of RVL Arduino.
 
-Raver Lights ESP is free software: you can redistribute it and/or modify
+RVL Arduino is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Raver Lights ESP is distributed in the hope that it will be useful,
+RVL Arduino is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Raver Lights ESP.  If not, see <http://www.gnu.org/licenses/>.
+along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_ESP_INTERFACE_H_
-#define RVL_ESP_INTERFACE_H_
+#ifndef RVL_ARDUINO_INTERFACE_H_
+#define RVL_ARDUINO_INTERFACE_H_
 
-#include <rvl.h>
 #include <stdint.h>
+#include "./rvl/rvl.h"
 
 namespace Interface {
 
@@ -54,4 +54,4 @@ void onBrightnessChanged(void (*callback)(uint8_t brightness));
 
 }  // namespace Interface
 
-#endif  // RVL_ESP_INTERFACE_H_
+#endif  // RVL_ARDUINO_INTERFACE_H_

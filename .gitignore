@@ -1,8 +1,5 @@
-.pioenvs
-.piolibdeps
 node_modules
 npm-debug.log
-.vscode/.browse*
 .DS_Store
 
 # For PCBs designed using KiCad: http://www.kicad-pcb.org/
@@ -28,3 +25,9 @@ _autosave-*
 
 # VS Code files
 .vscode/ipch
+.vscode/.browse*
+
+# Platform IO files
+.pio
+.pioenvs
+.piolibdeps
