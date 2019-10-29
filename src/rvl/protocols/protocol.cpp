@@ -21,6 +21,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
 #include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/system/system.h"
 #include "./rvl/protocols/discover/discover.h"
 #include "./rvl/protocols/clock_sync/clock_sync.h"
@@ -40,6 +41,7 @@ Reserved: 2 bytes = Reserved for future use
 */
 
 void init() {
+  NetworkState::init();
   ProtocolSystem::init();
   ProtocolDiscover::init();
   ProtocolClockSync::init();
@@ -47,6 +49,7 @@ void init() {
 }
 
 void loop() {
+  NetworkState::loop();
   ProtocolSystem::loop();
   ProtocolDiscover::loop();
   ProtocolClockSync::loop();
