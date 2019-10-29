@@ -23,31 +23,31 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/rvl.h"
 #include <stdint.h>
 
-void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port);
-RVLLogging* RVLESPInitLogging(RVLLogLevel logLevel);
-void RVLESPLoop();
+void RVLInitNetwork(const char* ssid, const char* password, uint16_t port);
+RVLLogging* RVLInitLogging(RVLLogLevel logLevel);
+void RVLLoop();
 
-RVLDeviceMode RVLESPGetMode();
-void RVLESPSetMode(RVLDeviceMode mode);
+RVLDeviceMode RVLGetMode();
+void RVLSetMode(RVLDeviceMode mode);
 
-RVLWaveSettings* RVLESPGetWaveSettings();
-void RVLESPSetWaveSettings(RVLWaveSettings* settings);
+RVLWaveSettings* RVLGetWaveSettings();
+void RVLSetWaveSettings(RVLWaveSettings* settings);
 
-uint32_t RVLESPGetAnimationClock();
+uint32_t RVLGetAnimationClock();
 
-uint8_t RVLESPGetChannel();
-void RVLESPSetChannel(uint8_t channel);
+uint8_t RVLGetChannel();
+void RVLSetChannel(uint8_t channel);
 
-bool RVLESPGetPowerState();
-void RVLESPSetPowerState(bool powerState);
+bool RVLGetPowerState();
+void RVLSetPowerState(bool powerState);
 
-uint8_t RVLESPGetBrightness();
-void RVLESPSetBrightness(uint8_t brightness);
+uint8_t RVLGetBrightness();
+void RVLSetBrightness(uint8_t brightness);
 
-void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
-void RVLESPOnConnectionStateChanged(void (*callback)(bool connected));
-void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode));
-void RVLESPOnPowerStateChanged(void (*callback)(bool powerState));
-void RVLESPOnBrightnessChanged(void (*callback)(uint8_t brightness));
+void RVLOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings));
+void RVLOnConnectionStateChanged(void (*callback)(bool connected));
+void RVLOnModeChanged(void (*callback)(RVLDeviceMode mode));
+void RVLOnPowerStateChanged(void (*callback)(bool powerState));
+void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness));
 
 #endif  // RVL_ARDUINO_H_

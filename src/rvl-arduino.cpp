@@ -20,78 +20,78 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl-arduino.h"
 #include "./rvl_arduino/interface.h"
 
-void RVLESPInitNetwork(const char* ssid, const char* password, uint16_t port) {
+void RVLInitNetwork(const char* ssid, const char* password, uint16_t port) {
   Interface::initNetwork(ssid, password, port);
 }
 
-RVLLogging* RVLESPInitLogging(RVLLogLevel logLevel) {
+RVLLogging* RVLInitLogging(RVLLogLevel logLevel) {
   return Interface::initLogging(logLevel);
 }
 
-void RVLESPLoop() {
+void RVLLoop() {
   Interface::loop();
 }
 
-RVLDeviceMode RVLESPGetMode() {
+RVLDeviceMode RVLGetMode() {
   return Interface::getMode();
 }
 
-void RVLESPSetMode(RVLDeviceMode mode) {
+void RVLSetMode(RVLDeviceMode mode) {
   Interface::setMode(mode);
 }
 
-RVLWaveSettings* RVLESPGetWaveSettings() {
+RVLWaveSettings* RVLGetWaveSettings() {
   return Interface::getWaveSettings();
 }
 
-void RVLESPSetWaveSettings(RVLWaveSettings* settings) {
+void RVLSetWaveSettings(RVLWaveSettings* settings) {
   Interface::setWaveSettings(settings);
 }
 
-uint32_t RVLESPGetAnimationClock() {
+uint32_t RVLGetAnimationClock() {
   return Interface::getAnimationClock();
 }
 
-uint8_t RVLESPGetChannel() {
+uint8_t RVLGetChannel() {
   return Interface::getChannel();
 }
 
-void RVLESPSetChannel(uint8_t channel) {
+void RVLSetChannel(uint8_t channel) {
   Interface::setChannel(channel);
 }
 
-bool RVLESPGetPowerState() {
+bool RVLGetPowerState() {
   return Interface::getPowerState();
 }
 
-void RVLESPSetPowerState(bool powerState) {
+void RVLSetPowerState(bool powerState) {
   Interface::setPowerState(powerState);
 }
 
-uint8_t RVLESPGetBrightness() {
+uint8_t RVLGetBrightness() {
   return Interface::getBrightness();
 }
 
-void RVLESPSetBrightness(uint8_t brightness) {
+void RVLSetBrightness(uint8_t brightness) {
   Interface::setBrightness(brightness);
 }
 
-void RVLESPOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
+void RVLOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
   Interface::onWaveSettingsUpdated(callback);
 }
 
-void RVLESPOnConnectionStateChanged(void (*callback)(bool connected)) {
+void RVLOnConnectionStateChanged(void (*callback)(bool connected)) {
   Interface::onConnectionStateChanged(callback);
 }
 
-void RVLESPOnModeChanged(void (*callback)(RVLDeviceMode mode)) {
+void RVLOnModeChanged(void (*callback)(RVLDeviceMode mode)) {
   Interface::onModeChanged(callback);
 }
 
-void RVLESPOnPowerStateChanged(void (*callback)(bool powerState)) {
+void RVLOnPowerStateChanged(void (*callback)(bool powerState)) {
   Interface::onPowerStateChanged(callback);
 }
 
-void RVLESPOnBrightnessChanged(void (*callback)(uint8_t brightness)) {
+void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness)) {
   Interface::onBrightnessChanged(callback);
 }
