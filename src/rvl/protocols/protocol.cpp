@@ -92,16 +92,16 @@ void parsePacket() {
 
   Platform::logging->debug("Processing Message sent from %d to %d", source, destination);
   switch (packetType) {
-    case 1:
+    case PACKET_TYPE_SYSTEM:
       ProtocolSystem::parsePacket();
       break;
-    case 2:
-      ProtocolDiscover::parsePacket();
+    case PACKET_TYPE_DISCOVER:
+      ProtocolDiscover::parsePacket(source);
       break;
-    case 3:
-      ProtocolClockSync::parsePacket();
+    case PACKET_TYPE_CLOCK_SYNC:
+      ProtocolClockSync::parsePacket(source);
       break;
-    case 4:
+    case PACKET_TYPE_WAVE_ANIMATION:
       ProtocolWave::parsePacket();
       break;
     default:
@@ -110,13 +110,21 @@ void parsePacket() {
   }
 }
 
-void sendHeader(uint8_t packetType) {
+void sendHeader(uint8_t packetType, uint8_t destination) {
   Platform::transport->write(signature, 4);
   Platform::transport->write8(PROTOCOL_VERSION);
-  Platform::transport->write8(getMulticastAddress());
+  Platform::transport->write8(destination);
   Platform::transport->write8(Platform::platform->getDeviceId());
   Platform::transport->write8(packetType);
   Platform::transport->write16(0);
+}
+
+void sendBroadcastHeader(uint8_t packetType) {
+  sendHeader(packetType, 255);
+}
+
+void sendMulticastHeader(uint8_t packetType) {
+  sendHeader(packetType, getMulticastAddress());
 }
 
 }  // namespace Protocol

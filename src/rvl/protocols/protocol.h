@@ -31,7 +31,9 @@ void loop();
 
 void parsePacket();
 
-void sendHeader(uint8_t packetType);
+void sendHeader(uint8_t packetType, uint8_t destination);
+void sendBroadcastHeader(uint8_t packetType);
+void sendMulticastHeader(uint8_t packetType);
 
 }  // namespace Protocol
 

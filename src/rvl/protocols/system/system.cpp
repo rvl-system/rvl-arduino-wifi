@@ -20,10 +20,10 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <stdint.h>
 #include "./rvl/rvl.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/system/system.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/system/system.h"
 
 namespace ProtocolSystem {
 
@@ -53,7 +53,7 @@ void sync() {
   }
   Platform::logging->debug("Syncing system parameters");
   Platform::transport->beginWrite();
-  Protocol::sendHeader(1);
+  Protocol::sendBroadcastHeader(PACKET_TYPE_SYSTEM);
   Platform::transport->write8(Platform::platform->getPowerState());
   Platform::transport->write8(Platform::platform->getBrightness());
   Platform::transport->write16(0);

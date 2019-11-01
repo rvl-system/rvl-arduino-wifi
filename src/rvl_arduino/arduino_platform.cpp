@@ -97,8 +97,7 @@ ArduinoTransport::ArduinoTransport(WiFiUDP* udp, uint16_t port) {
 }
 
 void ArduinoTransport::beginWrite() {
-  auto ip = WiFi.localIP();
-  ip[3] = 255;
+   IPAddress ip(255, 255, 255, 255);
   this->udp->beginPacket(ip, this->port);
 }
 

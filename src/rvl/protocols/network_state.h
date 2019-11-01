@@ -27,6 +27,12 @@ namespace NetworkState {
 void init();
 void loop();
 
+void refreshNode(uint8_t node);
+bool isNodeActive(uint8_t node);
+
+bool isControllerNode(uint8_t node);
+void refreshControllerNode(uint8_t node);
+
 }  // namespace NetworkState
 
 #endif  // RVL_PROTOCOLS_NETWORK_STATE_H_

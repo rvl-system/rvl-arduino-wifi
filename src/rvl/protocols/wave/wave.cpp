@@ -21,10 +21,10 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include "./rvl/rvl.h"
 #include "./rvl/wave.h"
-#include "./rvl/protocols/protocol.h"
-#include "./rvl/protocols/wave/wave.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/wave/wave.h"
 
 namespace ProtocolWave {
 
@@ -67,7 +67,7 @@ void sync() {
   auto waveSettings = Platform::platform->getWaveSettings();
   uint16_t length = sizeof(RVLWave) * NUM_WAVES;
   Platform::transport->beginWrite();
-  Protocol::sendHeader(4);
+  Protocol::sendMulticastHeader(PACKET_TYPE_WAVE_ANIMATION);
   Platform::transport->write8(waveSettings->timePeriod);
   Platform::transport->write8(waveSettings->distancePeriod);
   Platform::transport->write(reinterpret_cast<uint8_t*>(&(waveSettings->waves)), length);
