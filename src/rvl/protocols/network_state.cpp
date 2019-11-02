@@ -53,6 +53,15 @@ void refreshNode(uint8_t node) {
   nodeTimestamps[node] = millis();
 }
 
+uint8_t getNextNode(uint8_t node) {
+  for (uint8_t i = node + 1; i < NUM_NODES; i++) {
+    if (isNodeActive(i)) {
+      return i;
+    }
+  }
+  return 255;
+}
+
 bool isNodeActive(uint8_t node) {
   return nodeTimestamps[node] > 0;
 }
