@@ -59,7 +59,7 @@ void loop() {
 void sync() {
   Platform::logging->debug("Broadcasting discover packet");
   Platform::transport->beginWrite();
-  Protocol::sendBroadcastHeader(PACKET_TYPE_DISCOVER);
+  Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
   Platform::transport->write8(1);  // type = ping
   Platform::transport->write8(0);  // reserved
   Platform::transport->write16(0);  // reserved
@@ -74,7 +74,7 @@ void parsePacket(uint8_t source) {
   NetworkState::refreshNode(source);
   if (type == 1) {
     Platform::transport->beginWrite();
-    Protocol::sendBroadcastHeader(PACKET_TYPE_DISCOVER);
+    Protocol::sendMulticastHeader(PACKET_TYPE_DISCOVER);
     Platform::transport->write8(2);  // type = pong
     Platform::transport->write8(0);  // reserved
     Platform::transport->write16(0);  // reserved

@@ -92,7 +92,6 @@ void parsePacket() {
     return;
   }
 
-  Platform::logging->debug("Processing Message sent from %d to %d", source, destination);
   switch (packetType) {
     case PACKET_TYPE_SYSTEM:
       ProtocolSystem::parsePacket();
