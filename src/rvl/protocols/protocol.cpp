@@ -67,13 +67,15 @@ void parsePacket() {
     return;
   }
 
+  uint8_t deviceId = Platform::platform->getDeviceId();
+
   uint8_t destination = Platform::transport->read8();  // destination
   uint8_t source = Platform::transport->read8();  // source
   uint8_t packetType = Platform::transport->read8();
   Platform::transport->read16();  // reserved
 
   // Ignore our own packets
-  if (source == Platform::platform->getDeviceId()) {
+  if (source == deviceId) {
     return;
   }
 
@@ -86,7 +88,7 @@ void parsePacket() {
   }
 
   // Ignore unicast packets meant for a different destination
-  if (destination < CHANNEL_OFFSET && destination != Platform::platform->getDeviceId()) {
+  if (destination < CHANNEL_OFFSET && destination != deviceId) {
     return;
   }
 

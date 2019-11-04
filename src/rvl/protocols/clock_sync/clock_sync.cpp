@@ -18,40 +18,52 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
+#include <algorithm>
 #include "./rvl/rvl.h"
 #include "./rvl/config.h"
 #include "./rvl/platform.h"
 #include "./rvl/protocols/protocol.h"
+#include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/clock_sync/clock_sync.h"
 
 namespace ProtocolClockSync {
 
-#define REFERENCE_BROADCAST_PACKET_TYPE 1
-#define OBSERVATION_TIME_PACKET_TYPE 2
+#define SYNC_PACKET_TYPE 1
+#define FOLLOW_UP_PACKET_TYPE 2
+#define DELAY_REQUEST_PACKET_TYPE 3
+#define DELAY_RESPONSE_PACKET_TYPE 4
 
 #define MAX_OFFSET_THRESHOLD 1000
 
-uint16_t currentReferenceID = 0;
-uint32_t currentReferenceBroadcastTimes[240];
-
-uint8_t referenceIdCounter = 0;
 uint32_t nextSyncTime = 0;
+uint8_t syncId = 0;
+
+uint32_t t1;
+uint32_t t2;
+uint32_t t3;
+uint32_t t4;
 
 /*
 Parent packet:
-Type: 1 byte = 1: reference broadcast, 2: observed time, 3: select new reference controller
-ID: 2 bytes = Upper byte is device ID (to make it unique), lower byte is a counter
-Clock: 4 bytes = Normally ignored, but is used by receivers that had not previously
-  been synchronized to immediately synchronize in a loose manner. The receiver will
-  necessarily be off by fair amount of latency, but it's better than nothing.
-  Note: this can also be used to roughly measure latency, although only after the system
-  is considered to be "well synchronized." It's _possible_ that "well synchronized" could
-  be defined as all type 2 packet's clocks being within some margin of error
-Reserved: 1 byte
+Type: 1 byte = 1: Sync, 2: Follow Up, 3: Delay Request 4: Delay Response
+ID: 1 byte = the id of the synchronization set
+
+Sync packet (broadcast) controller->receiver:
+no body, receiver stores T2 as soon as this packet is received
+
+Follow up packet (unicast) controller->receiver:
+T1: 4 bytes = the timestamp of the first broadcast (right after it's sent)
+
+Delay Request packet (unicast) receiver->controller:
+no body, receiver stores T3 right before this packet is sent
+
+Delay Response packet (unicast) controller->receiver:
+T4: 4 bytes = the timestamp of the last broadcast (right before it's sent)
+
 */
 
 void init() {
-  nextSyncTime = Platform::platform->getLocalTime();
+  nextSyncTime = Platform::platform->getLocalTime() + 3 * CLIENT_SYNC_INTERVAL / 4;
 }
 
 void loop() {
@@ -62,64 +74,75 @@ void loop() {
     return;
   }
   nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
-  currentReferenceID = (Platform::platform->getDeviceId() << 8) + referenceIdCounter;
-  Platform::logging->debug("Sending reference broadcast");
+
+  // Send the Sync packet
+  Platform::logging->debug("Sending Clock Sync sync packet");
   Platform::transport->beginWrite();
-  Protocol::sendBroadcastHeader(PACKET_TYPE_CLOCK_SYNC);
-  Platform::transport->write8(REFERENCE_BROADCAST_PACKET_TYPE);  // type
-  Platform::transport->write16(currentReferenceID);  // id
-  Platform::transport->write32(Platform::platform->getAnimationClock());  // clock
-  Platform::transport->write8(0);  // reserver
+  Protocol::sendMulticastHeader(PACKET_TYPE_CLOCK_SYNC);
+  Platform::transport->write8(SYNC_PACKET_TYPE);  // reserved
+  Platform::transport->write8(syncId++);
   Platform::transport->endWrite();
-  referenceIdCounter++;
+
+  uint32_t clock = Platform::platform->getAnimationClock();
+
+  // Send the follow up packet of the time when we *finished* sending the sync packet
+  Platform::transport->beginWrite();
+  Protocol::sendMulticastHeader(PACKET_TYPE_CLOCK_SYNC);
+  Platform::transport->write8(FOLLOW_UP_PACKET_TYPE);  // reserved
+  Platform::transport->write8(syncId);
+  Platform::transport->write32(clock);
+  Platform::transport->endWrite();
 }
 
 void parsePacket(uint8_t source) {
-  Platform::logging->debug("Parsing Clock Sync packet");
   uint8_t packetType = Platform::transport->read8();
-  uint16_t id = Platform::transport->read16();
-  uint32_t commandTime = Platform::transport->read32();
-  Platform::transport->read8(); // Reserved
+  uint8_t id = Platform::transport->read8();
 
   switch (packetType) {
-    case REFERENCE_BROADCAST_PACKET_TYPE: {
-      uint32_t observedTime = Platform::platform->getAnimationClock();
-      if (observedTime < commandTime - MAX_OFFSET_THRESHOLD || observedTime > commandTime + MAX_OFFSET_THRESHOLD) {
-        Platform::logging->debug(
-          "Local time %d is outside the threshold of reference broadcast time %d. Replacing local time with reference time",
-          observedTime, commandTime);
-        Platform::platform->setClockOffset(
-          static_cast<int32_t>(commandTime) -
-          static_cast<int32_t>(Platform::platform->getLocalTime()));
-        break;
-      }
-      currentReferenceID = id;
-      Platform::logging->debug("Responding to reference broadcast id=%d with local time % d", id, observedTime);
+    case SYNC_PACKET_TYPE: {
+      Platform::logging->debug("Parsing Clock Sync sync packet");
+      t2 = Platform::platform->getAnimationClock();
+      break;
+    }
+
+    case FOLLOW_UP_PACKET_TYPE: {
+      Platform::logging->debug("Parsing Clock Sync follow up packet");
+      t1 = Platform::transport->read32();
+      t3 = Platform::platform->getAnimationClock();
       Platform::transport->beginWrite();
-      Protocol::sendBroadcastHeader(PACKET_TYPE_CLOCK_SYNC);
-      Platform::transport->write8(OBSERVATION_TIME_PACKET_TYPE);  // type
-      Platform::transport->write16(id);  // id
-      Platform::transport->write32(observedTime);  // clock
-      Platform::transport->write8(0);  // reserver
+      Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
+      Platform::transport->write8(DELAY_REQUEST_PACKET_TYPE);
+      Platform::transport->write8(id);
       Platform::transport->endWrite();
       break;
     }
 
-    case OBSERVATION_TIME_PACKET_TYPE: {
-      // Check if we received an observation packet from an old or missed reference
-      // broadcast, and if so ignore it since we likely don't have enough info to act on it
-      Platform::logging->debug("observation packet ids: %d, %d", id, currentReferenceID);
-      if (id != currentReferenceID) {
-        break;
-      }
-      Platform::logging->debug("Received observation packet from %d with observed time %d", source, commandTime);
-      // TODO: figure out when we've collected enough observations to calculate the offset, then do it
+    case DELAY_REQUEST_PACKET_TYPE: {
+      uint32_t clock = Platform::platform->getAnimationClock();
+      Platform::logging->debug("Parsing Clock Sync delay request packet");
+      Platform::transport->beginWrite();
+      Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, source);
+      Platform::transport->write8(DELAY_RESPONSE_PACKET_TYPE);
+      Platform::transport->write8(id);
+      Platform::transport->write32(clock);
+      Platform::transport->endWrite();
       break;
     }
 
-    default:
+    case DELAY_RESPONSE_PACKET_TYPE: {
+      Platform::logging->debug("Parsing Clock Sync delay response packet with parameters t1=%d t2=%d t3=%d t4=%d", t1, t2, t3, t4);
+      t4 = Platform::transport->read32();
+      int32_t meanPathDelay = ((static_cast<int32_t>(t2) - static_cast<int32_t>(t1)) +
+        (static_cast<int32_t>(t4) - static_cast<int32_t>(t3))) / 2;
+      Platform::logging->debug("meanPathDelay=%d, t4=%d", meanPathDelay, t4);
+      Platform::platform->setAnimationClock(t4 + meanPathDelay);
+      break;
+    }
+
+    default: {
       Platform::logging->debug("Received unknown clock sync subpacket type %d", packetType);
       break;
+    }
   }
 }
 

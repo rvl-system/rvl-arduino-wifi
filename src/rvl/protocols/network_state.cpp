@@ -59,6 +59,11 @@ uint8_t getNextNode(uint8_t node) {
       return i;
     }
   }
+  for (uint8_t i = 0; i < node; i++) {
+    if (isNodeActive(i)) {
+      return i;
+    }
+  }
   return 255;
 }
 

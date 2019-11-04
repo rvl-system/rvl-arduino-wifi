@@ -29,6 +29,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/protocols/system/system.h"
 
 uint32_t animationClock;
+int32_t clockOffset = 0;
 
 RVLPlatformInterface* rvlPlatform;
 
@@ -43,7 +44,7 @@ void RVLMessagingInit(
 }
 
 void RVLMessagingLoop() {
-  animationClock = rvlPlatform->getLocalTime() + rvlPlatform->getClockOffset();
+  animationClock = rvlPlatform->getLocalTime() + clockOffset;
   if (!rvlPlatform->isNetworkAvailable()) {
     return;
   }
@@ -130,15 +131,12 @@ void RVLPlatformInterface::onBrightnessUpdated() {
   ProtocolSystem::sync();
 }
 
-uint32_t RVLPlatformInterface::getClockOffset() {
-  return this->clockOffset;
-}
-void RVLPlatformInterface::setClockOffset(uint32_t newOffset) {
-  this->clockOffset = newOffset;
-}
-
 uint32_t RVLPlatformInterface::getAnimationClock() {
   return animationClock;
+}
+
+void RVLPlatformInterface::setAnimationClock(uint32_t newClock) {
+  clockOffset = newClock - rvlPlatform->getLocalTime();
 }
 
 uint8_t RVLPlatformInterface::getChannel() {
