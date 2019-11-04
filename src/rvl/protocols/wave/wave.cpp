@@ -43,19 +43,24 @@ v: a b w_t w_x phi
 a: a b w_t w_x phi
 */
 
-uint32_t nextSyncTime = INT_MAX;
-
-void sync();
+#define SYNC_ITERATION_MODULO 1750
+bool hasSyncedThisLoop = false;
 
 void init() {
-  nextSyncTime = Platform::platform->getLocalTime();
 }
 
 void loop() {
-  if (Platform::platform->getLocalTime() < nextSyncTime) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
+  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+    hasSyncedThisLoop = false;
+    return;
+  }
+  if (hasSyncedThisLoop) {
+    return;
+  }
+  hasSyncedThisLoop = true;
   sync();
 }
 

@@ -35,8 +35,11 @@ namespace ProtocolClockSync {
 
 #define MAX_OFFSET_THRESHOLD 1000
 
-uint32_t nextSyncTime = 0;
+#define SYNC_ITERATION_MODULO 500
+bool hasSyncedThisLoop = false;
+
 uint8_t syncId = 0;
+uint8_t currentSyncNode = 255;
 
 uint32_t t1;
 uint32_t t2;
@@ -59,26 +62,13 @@ no body, receiver stores T3 right before this packet is sent
 
 Delay Response packet (unicast) controller->receiver:
 T4: 4 bytes = the timestamp of the last broadcast (right before it's sent)
-
 */
 
-void init() {
-  nextSyncTime = Platform::platform->getLocalTime() + 3 * CLIENT_SYNC_INTERVAL / 4;
-}
-
-void loop() {
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
-    return;
-  }
-  if (Platform::platform->getLocalTime() < nextSyncTime) {
-    return;
-  }
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
-
+void synchronizeNode(uint8_t node) {
   // Send the Sync packet
   Platform::logging->debug("Sending Clock Sync sync packet");
   Platform::transport->beginWrite();
-  Protocol::sendMulticastHeader(PACKET_TYPE_CLOCK_SYNC);
+  Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
   Platform::transport->write8(SYNC_PACKET_TYPE);  // reserved
   Platform::transport->write8(syncId++);
   Platform::transport->endWrite();
@@ -87,11 +77,34 @@ void loop() {
 
   // Send the follow up packet of the time when we *finished* sending the sync packet
   Platform::transport->beginWrite();
-  Protocol::sendMulticastHeader(PACKET_TYPE_CLOCK_SYNC);
+  Protocol::sendHeader(PACKET_TYPE_CLOCK_SYNC, node);
   Platform::transport->write8(FOLLOW_UP_PACKET_TYPE);  // reserved
   Platform::transport->write8(syncId);
   Platform::transport->write32(clock);
   Platform::transport->endWrite();
+}
+
+void init() {
+}
+
+void loop() {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+    return;
+  }
+  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+    hasSyncedThisLoop = false;
+    return;
+  }
+  if (hasSyncedThisLoop) {
+    return;
+  }
+  hasSyncedThisLoop = true;
+  uint8_t nextNode = NetworkState::getNextNode(255);
+  Platform::logging->debug("Next node: %d", nextNode);
+  if (nextNode != 255) {
+    Platform::logging->debug("Starting clock synchronization");
+    synchronizeNode(nextNode);
+  }
 }
 
 void parsePacket(uint8_t source) {
@@ -126,6 +139,13 @@ void parsePacket(uint8_t source) {
       Platform::transport->write8(id);
       Platform::transport->write32(clock);
       Platform::transport->endWrite();
+
+      // Get the next active node in the network. If this node has a lower address
+      // than the previous one, then that means we've wrapped around the list and can stop
+      uint8_t nextNode = NetworkState::getNextNode(source);
+      if (nextNode < source) {
+        synchronizeNode(nextNode);
+      }
       break;
     }
 

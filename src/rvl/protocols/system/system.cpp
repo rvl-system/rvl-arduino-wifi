@@ -27,17 +27,24 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolSystem {
 
-uint32_t nextSyncTime = INT_MAX;
+#define SYNC_ITERATION_MODULO 1500
+bool hasSyncedThisLoop = false;
 
 void init() {
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL / 4;
 }
 
 void loop() {
-  if (Platform::platform->getLocalTime() < nextSyncTime) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
+  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+    hasSyncedThisLoop = false;
+    return;
+  }
+  if (hasSyncedThisLoop) {
+    return;
+  }
+  hasSyncedThisLoop = true;
   sync();
 }
 

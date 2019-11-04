@@ -26,8 +26,8 @@ namespace ProtocolWave {
 
 void init();
 void loop();
-void sync();
 
+void sync();
 void parsePacket();
 
 }  // namespace ProtocolWave

@@ -26,8 +26,8 @@ namespace ProtocolSystem {
 
 void init();
 void loop();
-void sync();
 
+void sync();
 void parsePacket();
 
 }  // namespace ProtocolSystem

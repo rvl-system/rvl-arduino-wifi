@@ -28,21 +28,31 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ProtocolDiscover {
 
-uint32_t nextSyncTime = INT_MAX;
+#define SYNC_ITERATION_MODULO 10
+bool hasSyncedThisLoop = false;
+
+void sync();
 
 /*
-Reserved: 4 bytes
+Type: 1 byte = 1: ping, 2 pong
+Reserved: 3 bytes
 */
 
 void init() {
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL / 4;
 }
 
 void loop() {
-  if (Platform::platform->getLocalTime() < nextSyncTime) {
+  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
     return;
   }
-  nextSyncTime = Platform::platform->getLocalTime() + CLIENT_SYNC_INTERVAL;
+  if (Platform::platform->getLocalTime() % CLIENT_SYNC_INTERVAL < SYNC_ITERATION_MODULO) {
+    hasSyncedThisLoop = false;
+    return;
+  }
+  if (hasSyncedThisLoop) {
+    return;
+  }
+  hasSyncedThisLoop = true;
   sync();
 }
 
@@ -50,14 +60,26 @@ void sync() {
   Platform::logging->debug("Broadcasting discover packet");
   Platform::transport->beginWrite();
   Protocol::sendBroadcastHeader(PACKET_TYPE_DISCOVER);
-  Platform::transport->write32(0);  // reserved
+  Platform::transport->write8(1);  // type = ping
+  Platform::transport->write8(0);  // reserved
+  Platform::transport->write16(0);  // reserved
   Platform::transport->endWrite();
 }
 
 void parsePacket(uint8_t source) {
   Platform::logging->debug("Parsing Discover packet");
-  Platform::transport->read32();  // reserved
+  uint8_t type = Platform::transport->read8();
+  Platform::transport->read8();  // reserved
+  Platform::transport->read16();  // reserved
   NetworkState::refreshNode(source);
+  if (type == 1) {
+    Platform::transport->beginWrite();
+    Protocol::sendBroadcastHeader(PACKET_TYPE_DISCOVER);
+    Platform::transport->write8(2);  // type = pong
+    Platform::transport->write8(0);  // reserved
+    Platform::transport->write16(0);  // reserved
+    Platform::transport->endWrite();
+  }
 }
 
 }  // namespace ProtocolDiscover

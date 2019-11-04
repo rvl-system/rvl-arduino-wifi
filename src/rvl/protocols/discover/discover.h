@@ -28,7 +28,6 @@ namespace ProtocolDiscover {
 void init();
 void loop();
 
-void sync();
 void parsePacket(uint8_t source);
 
 }  // namespace ProtocolDiscover
