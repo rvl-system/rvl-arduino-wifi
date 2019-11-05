@@ -23,6 +23,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/wave.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/protocol.h"
 #include "./rvl/protocols/wave/wave.h"
 
@@ -79,7 +80,10 @@ void sync() {
   Platform::transport->endWrite();
 }
 
-void parsePacket() {
+void parsePacket(uint8_t source) {
+  if (!NetworkState::isControllerNode(source)) {
+    return;
+  }
   Platform::logging->debug("Parsing Wave packet");
   RVLWaveSettings newWaveSettings;
   newWaveSettings.timePeriod = Platform::transport->read8();

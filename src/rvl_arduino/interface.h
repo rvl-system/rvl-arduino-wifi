@@ -48,6 +48,7 @@ void setBrightness(uint8_t brightness);
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
+void onControlledStateChanged(void (*callback)(bool controlled));
 void onModeChanged(void (*callback)(RVLDeviceMode mode));
 void onPowerStateChanged(void (*callback)(bool powerState));
 void onBrightnessChanged(void (*callback)(uint8_t brightness));

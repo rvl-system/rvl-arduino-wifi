@@ -22,6 +22,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include "./rvl/rvl.h"
 #include "./rvl/platform.h"
 #include "./rvl/config.h"
+#include "./rvl/protocols/network_state.h"
 #include "./rvl/protocols/protocol.h"
 #include "./rvl/protocols/system/system.h"
 
@@ -67,7 +68,10 @@ void sync() {
   Platform::transport->endWrite();
 }
 
-void parsePacket() {
+void parsePacket(uint8_t source) {
+  if (!NetworkState::isControllerNode(source)) {
+    return;
+  }
   Platform::logging->debug("Parsing System packet");
 
   uint8_t power = Platform::transport->read8();  // power

@@ -28,7 +28,7 @@ void init();
 void loop();
 
 void sync();
-void parsePacket();
+void parsePacket(uint8_t source);
 
 }  // namespace ProtocolWave
 

@@ -46,6 +46,7 @@ const char* ssid;
 const char* password;
 uint16_t port;
 void (*connectionStateChangeCallback)(bool connected) = NULL;
+void (*controlledStateChangeCallback)(bool connected) = NULL;
 void (*deviceModeChangeCallback)(RVLDeviceMode mode) = NULL;
 
 bool networkInitialized = false;
@@ -168,6 +169,10 @@ void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
 
 void onConnectionStateChanged(void (*callback)(bool connected)) {
   connectionStateChangeCallback = callback;
+}
+
+void onControlledStateChanged(void (*callback)(bool controlled)) {
+  controlledStateChangeCallback = callback;
 }
 
 void onModeChanged(void (*callback)(RVLDeviceMode mode)) {

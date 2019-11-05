@@ -25,7 +25,7 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 namespace NetworkState {
 
 #define NUM_NODES 255
-#define NODE_EXPIRATION_DURATION 10000
+#define CONTROLLER_NODE_EXPIRATION_DURATION 10000
 
 uint32_t nodeTimestamps[NUM_NODES];
 
@@ -37,7 +37,7 @@ void init() {
 }
 
 void loop() {
-  uint32_t expirationTime = millis() - NODE_EXPIRATION_DURATION;
+  uint32_t expirationTime = millis() - CONTROLLER_NODE_EXPIRATION_DURATION;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       Platform::logging->debug("Node %d expired from the network map", i);
@@ -81,30 +81,33 @@ bool isNodeActive(uint8_t node) {
   return nodeTimestamps[node] > 0;
 }
 
-bool isNodeController(uint8_t node) {
+bool isControllerNode(uint8_t node) {
   // First, we check if we're in controller mode, in which case we always ignore
   // remote control
-  if (Platform::platform->getDeviceMode() != RVLDeviceMode::Controller) {
+  if (Platform::platform->getDeviceMode() == RVLDeviceMode::Controller) {
     return node == Platform::platform->getDeviceId();
   }
-  return node == controllerNode;
-}
 
-void refreshControllerNode(uint8_t node) {
   // Check if this is the same controller node we've seen before, or not. If not,
   // there *may* two active controllers at the same time, but it's also possible
   // the old one is no longer a controller
+  uint32_t currentTime = Platform::platform->getLocalTime();
   if (controllerNode != node) {
     // Check if the old controller hasn't broadcast in a while, meaning it's
     // likely offline or no longer in controller mode and can be replaced with
     // this new controller
-    if (millis() - controllerNodeLastRefreshed > NODE_EXPIRATION_DURATION) {
+    if (currentTime - controllerNodeLastRefreshed > CONTROLLER_NODE_EXPIRATION_DURATION) {
       controllerNode = node;
-      controllerNodeLastRefreshed = millis();
+      controllerNodeLastRefreshed = currentTime;
     }
   } else {
-    controllerNodeLastRefreshed = millis();
+    controllerNodeLastRefreshed = currentTime;
   }
+  return node == controllerNode;
+}
+
+bool isControllerActive() {
+  return Platform::platform->getLocalTime() - controllerNodeLastRefreshed > CONTROLLER_NODE_EXPIRATION_DURATION;
 }
 
 }  // namespace NetworkState

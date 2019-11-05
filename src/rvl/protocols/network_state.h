@@ -33,7 +33,7 @@ uint8_t getNumNodes();
 uint8_t getNextNode(uint8_t node);
 
 bool isControllerNode(uint8_t node);
-void refreshControllerNode(uint8_t node);
+bool isControllerActive();
 
 }  // namespace NetworkState
 

@@ -94,13 +94,13 @@ void parsePacket() {
 
   switch (packetType) {
     case PACKET_TYPE_SYSTEM:
-      ProtocolSystem::parsePacket();
+      ProtocolSystem::parsePacket(source);
       break;
     case PACKET_TYPE_CLOCK_SYNC:
       ProtocolClockSync::parsePacket(source);
       break;
     case PACKET_TYPE_WAVE_ANIMATION:
-      ProtocolWave::parsePacket();
+      ProtocolWave::parsePacket(source);
       break;
     default:
       Platform::logging->debug("Received unknown subpacket type %d", packetType);
