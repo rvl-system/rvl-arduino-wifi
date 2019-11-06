@@ -89,6 +89,17 @@ void ArduinoPlatform::setOnBrightnessUpdatedCallback(void (*callback)(uint8_t br
   this->brightnessUpdatedCallback = callback;
 }
 
+void ArduinoPlatform::onSynchronizationStateUpdated() {
+  RVLPlatformInterface::onSynchronizationStateUpdated();
+  if (this->synchronizationStateUpdatedCallback) {
+    this->synchronizationStateUpdatedCallback(this->getSynchronizationState());
+  }
+}
+
+void ArduinoPlatform::setOnSynchronizationStateUpdatedCallback(void (*callback)(bool synchronizationState)) {
+  this->synchronizationStateUpdatedCallback = callback;
+}
+
 // Transport implementation
 
 ArduinoTransport::ArduinoTransport(WiFiUDP* udp, uint16_t port) {

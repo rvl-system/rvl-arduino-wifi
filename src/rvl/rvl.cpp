@@ -131,6 +131,10 @@ void RVLPlatformInterface::onBrightnessUpdated() {
   ProtocolSystem::sync();
 }
 
+void RVLPlatformInterface::onSynchronizationStateUpdated() {
+  // Do nothing
+}
+
 uint32_t RVLPlatformInterface::getAnimationClock() {
   return animationClock;
 }
@@ -181,4 +185,13 @@ uint8_t RVLPlatformInterface::getBrightness() {
 void RVLPlatformInterface::setBrightness(uint8_t newBrightness) {
   this->brightness = newBrightness;
   this->onPowerStateUpdated();
+}
+
+bool RVLPlatformInterface::getSynchronizationState() {
+  return this->synchronized;
+}
+
+void RVLPlatformInterface::setSynchronizationState(bool synchronized) {
+  this->synchronized = synchronized;
+  this->onSynchronizationStateUpdated();
 }

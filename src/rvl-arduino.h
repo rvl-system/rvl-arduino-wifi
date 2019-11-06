@@ -41,6 +41,8 @@ void RVLSetChannel(uint8_t channel);
 bool RVLGetPowerState();
 void RVLSetPowerState(bool powerState);
 
+bool RVLGetSynchronizationState();
+
 uint8_t RVLGetBrightness();
 void RVLSetBrightness(uint8_t brightness);
 
@@ -49,5 +51,6 @@ void RVLOnConnectionStateChanged(void (*callback)(bool connected));
 void RVLOnModeChanged(void (*callback)(RVLDeviceMode mode));
 void RVLOnPowerStateChanged(void (*callback)(bool powerState));
 void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness));
+void RVLOnSynchronizationStateChage(void (*callback)(bool synchronized));
 
 #endif  // RVL_ARDUINO_H_

@@ -94,6 +94,7 @@ void processObservations() {
     averageOffset /= numObservationsProcessed;
     Platform::logging->debug("Updating animation clock with offset: %d", averageOffset);
     Platform::platform->setAnimationClock(Platform::platform->getAnimationClock() + averageOffset);
+    NetworkState::refreshClockSynchronization();
   }
 }
 

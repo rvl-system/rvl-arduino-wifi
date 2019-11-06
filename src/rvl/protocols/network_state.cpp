@@ -30,27 +30,41 @@ namespace NetworkState {
 uint32_t nodeTimestamps[NUM_NODES];
 
 uint8_t controllerNode;
-uint32_t controllerNodeLastRefreshed;
+uint32_t controllerNodeLastRefreshed = 0;
+uint32_t clockLastRefreshed = 0;
 
 void init() {
   memset(nodeTimestamps, 0, sizeof(uint32_t) * NUM_NODES);
 }
 
 void loop() {
-  uint32_t expirationTime = millis() - CONTROLLER_NODE_EXPIRATION_DURATION;
+  uint32_t expirationTime = Platform::platform->getLocalTime() - CONTROLLER_NODE_EXPIRATION_DURATION;
   for (uint8_t i = 0; i < NUM_NODES; i++) {
     if (nodeTimestamps[i] > 0 && nodeTimestamps[i] < expirationTime) {
       Platform::logging->debug("Node %d expired from the network map", i);
       nodeTimestamps[i] = 0;
     }
   }
+  bool synchronized = false;
+  if (Platform::platform->getDeviceMode() == RVLDeviceMode::Controller) {
+    synchronized = isClockSynchronizationActive();
+  } else {
+    synchronized = isClockSynchronizationActive() && isControllerActive();
+  }
+  if (synchronized != Platform::platform->getSynchronizationState()) {
+    Platform::platform->setSynchronizationState(synchronized);
+  }
 }
 
 void refreshNode(uint8_t node) {
   if (!isNodeActive(node)) {
-      Platform::logging->debug("Adding node %d to the network map", node);
+    Platform::logging->debug("Adding node %d to the network map", node);
   }
-  nodeTimestamps[node] = millis();
+  nodeTimestamps[node] = Platform::platform->getLocalTime();
+}
+
+void refreshClockSynchronization() {
+  clockLastRefreshed = Platform::platform->getLocalTime();
 }
 
 uint8_t getNumNodes() {
@@ -107,7 +121,13 @@ bool isControllerNode(uint8_t node) {
 }
 
 bool isControllerActive() {
-  return Platform::platform->getLocalTime() - controllerNodeLastRefreshed > CONTROLLER_NODE_EXPIRATION_DURATION;
+  return (controllerNodeLastRefreshed > 0) &&
+    (Platform::platform->getLocalTime() - controllerNodeLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
+}
+
+bool isClockSynchronizationActive() {
+  return (clockLastRefreshed > 0) &&
+    (Platform::platform->getLocalTime() - clockLastRefreshed < CONTROLLER_NODE_EXPIRATION_DURATION);
 }
 
 }  // namespace NetworkState

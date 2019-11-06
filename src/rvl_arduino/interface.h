@@ -46,12 +46,15 @@ void setPowerState(bool powerState);
 uint8_t getBrightness();
 void setBrightness(uint8_t brightness);
 
+bool getSynchronizationState();
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings));
 void onConnectionStateChanged(void (*callback)(bool connected));
 void onControlledStateChanged(void (*callback)(bool controlled));
 void onModeChanged(void (*callback)(RVLDeviceMode mode));
 void onPowerStateChanged(void (*callback)(bool powerState));
 void onBrightnessChanged(void (*callback)(uint8_t brightness));
+void onSynchronizationStateChage(void (*callback)(bool synchronized));
 
 }  // namespace Interface
 

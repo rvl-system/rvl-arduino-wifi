@@ -28,12 +28,16 @@ void init();
 void loop();
 
 void refreshNode(uint8_t node);
+void refreshClockSynchronization();
+
 bool isNodeActive(uint8_t node);
 uint8_t getNumNodes();
 uint8_t getNextNode(uint8_t node);
 
 bool isControllerNode(uint8_t node);
 bool isControllerActive();
+
+bool isClockSynchronizationActive();
 
 }  // namespace NetworkState
 

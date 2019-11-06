@@ -37,11 +37,13 @@ class ArduinoPlatform : public RVLPlatformInterface {
   void (*waveSettingsUpdatedCallback)(RVLWaveSettings* settings) = NULL;
   void (*powerStateUpdatedCallback)(bool powerState) = NULL;
   void (*brightnessUpdatedCallback)(uint8_t brightness) = NULL;
+  void (*synchronizationStateUpdatedCallback)(bool synchronizationState) = NULL;
 
  protected:
   void onWaveSettingsUpdated();
   void onPowerStateUpdated();
   void onBrightnessUpdated();
+  void onSynchronizationStateUpdated();
 
  public:
   uint32_t getLocalTime();
@@ -51,6 +53,7 @@ class ArduinoPlatform : public RVLPlatformInterface {
   void setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings));
   void setOnPowerStateUpdatedCallback(void (*callback)(bool powerState));
   void setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness));
+  void setOnSynchronizationStateUpdatedCallback(void (*callback)(bool synchronizationState));
 };
 
 class ArduinoTransport : public RVLTransportInterface {

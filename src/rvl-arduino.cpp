@@ -76,6 +76,10 @@ void RVLSetBrightness(uint8_t brightness) {
   Interface::setBrightness(brightness);
 }
 
+bool RVLGetSynchronizationState() {
+  return Interface::getSynchronizationState();
+}
+
 void RVLOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
   Interface::onWaveSettingsUpdated(callback);
 }
@@ -94,4 +98,8 @@ void RVLOnPowerStateChanged(void (*callback)(bool powerState)) {
 
 void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness)) {
   Interface::onBrightnessChanged(callback);
+}
+
+void RVLOnSynchronizationStateChage(void (*callback)(bool synchronized)) {
+  Interface::onSynchronizationStateChage(callback);
 }

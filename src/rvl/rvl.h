@@ -88,6 +88,7 @@ class RVLPlatformInterface {
   RVLWaveSettings waveSettings;
   bool powerState = 0;
   uint8_t brightness = 0;
+  bool synchronized = 0;
 
  protected:
   virtual void onWaveSettingsUpdated();
@@ -96,6 +97,7 @@ class RVLPlatformInterface {
   virtual void onChannelUpdated();
   virtual void onPowerStateUpdated();
   virtual void onBrightnessUpdated();
+  virtual void onSynchronizationStateUpdated();
 
  public:
   virtual uint32_t getLocalTime() = 0;
@@ -119,6 +121,9 @@ class RVLPlatformInterface {
 
   uint8_t getBrightness();
   void setBrightness(uint8_t newBrightness);
+
+  bool getSynchronizationState();
+  void setSynchronizationState(bool synchronized);
 };
 
 void RVLMessagingInit(

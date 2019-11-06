@@ -163,6 +163,10 @@ void setBrightness(uint8_t brightness) {
   platform->setBrightness(brightness);
 }
 
+bool getSynchronizationState() {
+  return platform->getSynchronizationState();
+}
+
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
   platform->setOnWaveSettingsUpdatedCallback(callback);
 }
@@ -185,6 +189,10 @@ void onPowerStateChanged(void (*callback)(bool powerState)) {
 
 void onBrightnessChanged(void (*callback)(uint8_t brightness)) {
   platform->setOnBrightnessUpdatedCallback(callback);
+}
+
+void onSynchronizationStateChage(void (*callback)(bool synchronized)) {
+  platform->setOnSynchronizationStateUpdatedCallback(callback);
 }
 
 }  // namespace Interface
