@@ -24,11 +24,11 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <WiFi.h>
 #endif
 #include <WiFiUdp.h>
-#include "./rvl/rvl.h"
-#include "./rvl_arduino/interface.h"
-#include "./rvl_arduino/arduino_platform.h"
+#include <rvl.h>
+#include "./rvl_wifi/interface.h"
+#include "./rvl_wifi/platform.h"
 
-namespace Interface {
+namespace RVLWifiInterface {
 
 #define STATE_DISCONNECTED 0
 #define STATE_CONNECTING 1
@@ -38,8 +38,8 @@ uint8_t state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 
-ArduinoPlatform::ArduinoPlatform* platform;
-ArduinoPlatform::ArduinoTransport* transport;
+RVLWifiPlatform::Platform* platform;
+RVLWifiPlatform::Transport* transport;
 RVLLogging* logger;
 
 const char* ssid;
@@ -61,8 +61,8 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
   WiFi.setSleepMode(WIFI_NONE_SLEEP);   // Helps keep LEDs from flickering
 #endif
 
-  platform = new ArduinoPlatform::ArduinoPlatform();
-  transport = new ArduinoPlatform::ArduinoTransport(&udp, newport);
+  platform = new RVLWifiPlatform::Platform();
+  transport = new RVLWifiPlatform::Transport(&udp, newport);
 
   if (loggingInitialized) {
     RVLMessagingInit(platform, transport, logger);
@@ -71,7 +71,7 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
 }
 
 RVLLogging* initLogging(RVLLogLevel logLevel) {
-  logger = new RVLLogging(new ArduinoPlatform::ArduinoLogging(), logLevel);
+  logger = new RVLLogging(new RVLWifiPlatform::Logging(), logLevel);
 
   if (networkInitialized) {
     RVLMessagingInit(platform, transport, logger);
@@ -195,4 +195,4 @@ void onSynchronizationStateChage(void (*callback)(bool synchronized)) {
   platform->setOnSynchronizationStateUpdatedCallback(callback);
 }
 
-}  // namespace Interface
+}  // namespace RVLWifiInterface

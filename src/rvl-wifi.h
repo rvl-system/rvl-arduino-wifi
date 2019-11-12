@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_ARDUINO_H_
-#define RVL_ARDUINO_H_
+#ifndef RVL_WIFI_H_
+#define RVL_WIFI_H_
 
-#include "./rvl/rvl.h"
+#include <rvl.h>
 #include <stdint.h>
 
 void RVLInitNetwork(const char* ssid, const char* password, uint16_t port);
@@ -53,4 +53,4 @@ void RVLOnPowerStateChanged(void (*callback)(bool powerState));
 void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness));
 void RVLOnSynchronizationStateChage(void (*callback)(bool synchronized));
 
-#endif  // RVL_ARDUINO_H_
+#endif  // RVL_WIFI_H_

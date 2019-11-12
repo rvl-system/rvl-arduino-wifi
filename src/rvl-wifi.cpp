@@ -17,89 +17,89 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "./rvl-arduino.h"
-#include "./rvl_arduino/interface.h"
+#include "./rvl-wifi.h"
+#include "./rvl_wifi/interface.h"
 
 void RVLInitNetwork(const char* ssid, const char* password, uint16_t port) {
-  Interface::initNetwork(ssid, password, port);
+  RVLWifiInterface::initNetwork(ssid, password, port);
 }
 
 RVLLogging* RVLInitLogging(RVLLogLevel logLevel) {
-  return Interface::initLogging(logLevel);
+  return RVLWifiInterface::initLogging(logLevel);
 }
 
 void RVLLoop() {
-  Interface::loop();
+  RVLWifiInterface::loop();
 }
 
 RVLDeviceMode RVLGetMode() {
-  return Interface::getMode();
+  return RVLWifiInterface::getMode();
 }
 
 void RVLSetMode(RVLDeviceMode mode) {
-  Interface::setMode(mode);
+  RVLWifiInterface::setMode(mode);
 }
 
 RVLWaveSettings* RVLGetWaveSettings() {
-  return Interface::getWaveSettings();
+  return RVLWifiInterface::getWaveSettings();
 }
 
 void RVLSetWaveSettings(RVLWaveSettings* settings) {
-  Interface::setWaveSettings(settings);
+  RVLWifiInterface::setWaveSettings(settings);
 }
 
 uint32_t RVLGetAnimationClock() {
-  return Interface::getAnimationClock();
+  return RVLWifiInterface::getAnimationClock();
 }
 
 uint8_t RVLGetChannel() {
-  return Interface::getChannel();
+  return RVLWifiInterface::getChannel();
 }
 
 void RVLSetChannel(uint8_t channel) {
-  Interface::setChannel(channel);
+  RVLWifiInterface::setChannel(channel);
 }
 
 bool RVLGetPowerState() {
-  return Interface::getPowerState();
+  return RVLWifiInterface::getPowerState();
 }
 
 void RVLSetPowerState(bool powerState) {
-  Interface::setPowerState(powerState);
+  RVLWifiInterface::setPowerState(powerState);
 }
 
 uint8_t RVLGetBrightness() {
-  return Interface::getBrightness();
+  return RVLWifiInterface::getBrightness();
 }
 
 void RVLSetBrightness(uint8_t brightness) {
-  Interface::setBrightness(brightness);
+  RVLWifiInterface::setBrightness(brightness);
 }
 
 bool RVLGetSynchronizationState() {
-  return Interface::getSynchronizationState();
+  return RVLWifiInterface::getSynchronizationState();
 }
 
 void RVLOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
-  Interface::onWaveSettingsUpdated(callback);
+  RVLWifiInterface::onWaveSettingsUpdated(callback);
 }
 
 void RVLOnConnectionStateChanged(void (*callback)(bool connected)) {
-  Interface::onConnectionStateChanged(callback);
+  RVLWifiInterface::onConnectionStateChanged(callback);
 }
 
 void RVLOnModeChanged(void (*callback)(RVLDeviceMode mode)) {
-  Interface::onModeChanged(callback);
+  RVLWifiInterface::onModeChanged(callback);
 }
 
 void RVLOnPowerStateChanged(void (*callback)(bool powerState)) {
-  Interface::onPowerStateChanged(callback);
+  RVLWifiInterface::onPowerStateChanged(callback);
 }
 
 void RVLOnBrightnessChanged(void (*callback)(uint8_t brightness)) {
-  Interface::onBrightnessChanged(callback);
+  RVLWifiInterface::onBrightnessChanged(callback);
 }
 
 void RVLOnSynchronizationStateChage(void (*callback)(bool synchronized)) {
-  Interface::onSynchronizationStateChage(callback);
+  RVLWifiInterface::onSynchronizationStateChage(callback);
 }
