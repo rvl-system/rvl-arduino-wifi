@@ -63,7 +63,7 @@ class Transport : public RVLTransportInterface {
 
  public:
   Transport(WiFiUDP* udp, uint16_t port);
-  void beginWrite();
+  void beginWrite(uint8_t destination);
   void write8(uint8_t data);
   void write16(uint16_t data);
   void write32(uint32_t data);

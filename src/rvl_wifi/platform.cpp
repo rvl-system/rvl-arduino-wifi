@@ -107,9 +107,16 @@ Transport::Transport(WiFiUDP* udp, uint16_t port) {
   this->port = port;
 }
 
-void Transport::beginWrite() {
-  IPAddress ip(255, 255, 255, 255);
-  this->udp->beginPacket(ip, this->port);
+// Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
+void Transport::beginWrite(uint8_t destination) {
+  // We don't have real multicast, so we fall back to broadcast
+  if (destination >= 240) {
+    IPAddress ip(255, 255, 255, 255);
+    this->udp->beginPacket(ip, this->port);
+  } else {
+    IPAddress ip(WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], destination);
+    this->udp->beginPacket(ip, this->port);
+  }
 }
 
 void Transport::write8(uint8_t data) {
