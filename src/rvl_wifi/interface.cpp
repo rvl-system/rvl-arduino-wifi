@@ -87,6 +87,7 @@ void loop() {
       logger->info("Connecting to %s", ssid);
       WiFi.begin(ssid, password);
       state = STATE_CONNECTING;
+      RVLWifiPlatform::setConnectedState(false);
       // Fall through here instead of breaking
     case STATE_CONNECTING:
       if (WiFi.status() == WL_CONNECTED) {
@@ -97,6 +98,7 @@ void loop() {
           WiFi.localIP()[3]);
         udp.begin(port);
         state = STATE_CONNECTED;
+        RVLWifiPlatform::setConnectedState(true);
         if (connectionStateChangeCallback != NULL) {
           connectionStateChangeCallback(true);
         }
@@ -106,6 +108,7 @@ void loop() {
       if (WiFi.status() != WL_CONNECTED) {
         logger->info("Disconnected from WiFi, retrying");
         state = STATE_DISCONNECTED;
+        RVLWifiPlatform::setConnectedState(false);
         if (connectionStateChangeCallback != NULL) {
           connectionStateChangeCallback(false);
         }

@@ -75,7 +75,11 @@ class Transport : public RVLTransportInterface {
   uint16_t read16();
   uint32_t read32();
   void read(uint8_t* buffer, uint16_t length);
+
+  bool isConnected();
 };
+
+void setConnectedState(bool connectedState);
 
 }  // namespace RVLWifiPlatform
 

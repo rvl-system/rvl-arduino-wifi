@@ -164,4 +164,13 @@ void Transport::read(uint8_t* buffer, uint16_t length) {
   this->udp->read(buffer, length);
 }
 
+bool connected = false;
+void setConnectedState(bool connectedState) {
+  connected = connectedState;
+}
+
+bool Transport::isConnected() {
+  return connected;
+}
+
 }  // namespace RVLWifiPlatform
