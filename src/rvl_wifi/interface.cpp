@@ -40,7 +40,6 @@ WiFiUDP udp;
 
 RVLWifiPlatform::Platform* platform;
 RVLWifiPlatform::Transport* transport;
-RVLLogging* logger;
 
 const char* ssid;
 const char* password;
@@ -48,9 +47,6 @@ uint16_t port;
 void (*connectionStateChangeCallback)(bool connected) = NULL;
 void (*controlledStateChangeCallback)(bool connected) = NULL;
 void (*deviceModeChangeCallback)(RVLDeviceMode mode) = NULL;
-
-bool networkInitialized = false;
-bool loggingInitialized = false;
 
 void initNetwork(const char* newssid, const char* newpassword, uint16_t newport) {
   ssid = newssid;
@@ -63,35 +59,20 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
 
   platform = new RVLWifiPlatform::Platform();
   transport = new RVLWifiPlatform::Transport(&udp, newport);
-
-  if (loggingInitialized) {
-    RVLMessagingInit(platform, transport, logger);
-  }
-  networkInitialized = true;
-}
-
-RVLLogging* initLogging(RVLLogLevel logLevel) {
-  logger = new RVLLogging(new RVLWifiPlatform::Logging(), logLevel);
-
-  if (networkInitialized) {
-    RVLMessagingInit(platform, transport, logger);
-  }
-  loggingInitialized = true;
-
-  return logger;
+  RVLMessagingInit(platform, transport);
 }
 
 void loop() {
   switch (state) {
     case STATE_DISCONNECTED:
-      logger->info("Connecting to %s", ssid);
+      rvl::info("Connecting to %s", ssid);
       WiFi.begin(ssid, password);
       state = STATE_CONNECTING;
       RVLWifiPlatform::setConnectedState(false);
       // Fall through here instead of breaking
     case STATE_CONNECTING:
       if (WiFi.status() == WL_CONNECTED) {
-        logger->info("Connected to WiFi with address %d.%d.%d.%d",
+        rvl::info("Connected to WiFi with address %d.%d.%d.%d",
           WiFi.localIP()[0],
           WiFi.localIP()[1],
           WiFi.localIP()[2],
@@ -106,7 +87,7 @@ void loop() {
       break;
     case STATE_CONNECTED:
       if (WiFi.status() != WL_CONNECTED) {
-        logger->info("Disconnected from WiFi, retrying");
+        rvl::info("Disconnected from WiFi, retrying");
         state = STATE_DISCONNECTED;
         RVLWifiPlatform::setConnectedState(false);
         if (connectionStateChangeCallback != NULL) {

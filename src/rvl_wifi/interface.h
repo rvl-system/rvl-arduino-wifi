@@ -26,7 +26,6 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 namespace RVLWifiInterface {
 
 void initNetwork(const char* ssid, const char* password, uint16_t port);
-RVLLogging* initLogging(RVLLogLevel logLevel);
 void loop();
 
 RVLDeviceMode getMode();

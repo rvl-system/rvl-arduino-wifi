@@ -28,20 +28,6 @@ along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace RVLWifiPlatform {
 
-// Logging implementation
-
-void Logging::print(const char *s) {
-  Serial.print(s);
-}
-
-void Logging::println() {
-  Serial.println();
-}
-
-void Logging::println(const char *s) {
-  Serial.println(s);
-}
-
 // Platform implementation
 
 uint32_t Platform::getLocalTime() {

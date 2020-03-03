@@ -24,7 +24,6 @@ along with RVL Arduino.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 
 void RVLInitNetwork(const char* ssid, const char* password, uint16_t port);
-RVLLogging* RVLInitLogging(RVLLogLevel logLevel);
 void RVLLoop();
 
 RVLDeviceMode RVLGetMode();

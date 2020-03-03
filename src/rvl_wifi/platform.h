@@ -25,13 +25,6 @@ along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace RVLWifiPlatform {
 
-class Logging : public RVLLoggingInterface {
- public:
-  void print(const char *s);
-  void println();
-  void println(const char *s);
-};
-
 class Platform : public RVLPlatformInterface {
  private:
   void (*waveSettingsUpdatedCallback)(RVLWaveSettings* settings) = NULL;

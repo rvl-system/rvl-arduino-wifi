@@ -24,10 +24,6 @@ void RVLInitNetwork(const char* ssid, const char* password, uint16_t port) {
   RVLWifiInterface::initNetwork(ssid, password, port);
 }
 
-RVLLogging* RVLInitLogging(RVLLogLevel logLevel) {
-  return RVLWifiInterface::initLogging(logLevel);
-}
-
 void RVLLoop() {
   RVLWifiInterface::loop();
 }
