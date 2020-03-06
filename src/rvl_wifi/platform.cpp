@@ -28,41 +28,6 @@ along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace RVLWifiPlatform {
 
-// Platform implementation
-
-void Platform::onPowerStateUpdated() {
-  RVLPlatformInterface::onPowerStateUpdated();
-  if (this->powerStateUpdatedCallback != NULL) {
-    this->powerStateUpdatedCallback(rvl::getPowerState());
-  }
-}
-
-void Platform::setOnPowerStateUpdatedCallback(void (*callback)(bool powerState)) {
-  this->powerStateUpdatedCallback = callback;
-}
-
-void Platform::onBrightnessUpdated() {
-  RVLPlatformInterface::onBrightnessUpdated();
-  if (this->brightnessUpdatedCallback) {
-    this->brightnessUpdatedCallback(rvl::getBrightness());
-  }
-}
-
-void Platform::setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness)) {
-  this->brightnessUpdatedCallback = callback;
-}
-
-void Platform::onSynchronizationStateUpdated() {
-  RVLPlatformInterface::onSynchronizationStateUpdated();
-  if (this->synchronizationStateUpdatedCallback) {
-    this->synchronizationStateUpdatedCallback(rvl::getSynchronizationState());
-  }
-}
-
-void Platform::setOnSynchronizationStateUpdatedCallback(void (*callback)(bool synchronizationState)) {
-  this->synchronizationStateUpdatedCallback = callback;
-}
-
 // Transport implementation
 
 Transport::Transport(WiFiUDP* udp, uint16_t port) {

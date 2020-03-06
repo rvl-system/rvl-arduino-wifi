@@ -28,32 +28,6 @@ namespace RVLWifiInterface {
 void initNetwork(const char* ssid, const char* password, uint16_t port);
 void loop();
 
-RVLDeviceMode getMode();
-void setMode(RVLDeviceMode mode);
-
-RVLWaveSettings* getWaveSettings();
-void setWaveSettings(RVLWaveSettings* settings);
-
-uint32_t getAnimationClock();
-
-uint8_t getChannel();
-void setChannel(uint8_t channel);
-
-bool getPowerState();
-void setPowerState(bool powerState);
-
-uint8_t getBrightness();
-void setBrightness(uint8_t brightness);
-
-bool getSynchronizationState();
-
-void onConnectionStateChanged(void (*callback)(bool connected));
-void onControlledStateChanged(void (*callback)(bool controlled));
-void onModeChanged(void (*callback)(RVLDeviceMode mode));
-void onPowerStateChanged(void (*callback)(bool powerState));
-void onBrightnessChanged(void (*callback)(uint8_t brightness));
-void onSynchronizationStateChage(void (*callback)(bool synchronized));
-
 }  // namespace RVLWifiInterface
 
 #endif  // RVL_WIFI_INTERFACE_H_

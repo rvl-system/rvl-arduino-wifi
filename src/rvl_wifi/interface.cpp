@@ -38,7 +38,6 @@ uint8_t state = STATE_DISCONNECTED;
 
 WiFiUDP udp;
 
-RVLWifiPlatform::Platform* platform;
 RVLWifiPlatform::Transport* transport;
 
 const char* ssid;
@@ -57,9 +56,8 @@ void initNetwork(const char* newssid, const char* newpassword, uint16_t newport)
   WiFi.setSleepMode(WIFI_NONE_SLEEP);   // Helps keep LEDs from flickering
 #endif
 
-  platform = new RVLWifiPlatform::Platform();
   transport = new RVLWifiPlatform::Transport(&udp, newport);
-  RVLMessagingInit(platform, transport);
+  RVLMessagingInit(transport);
 }
 
 void loop() {
@@ -98,81 +96,6 @@ void loop() {
       break;
   }
   RVLMessagingLoop();
-}
-
-RVLDeviceMode getMode() {
-  return rvl::getDeviceMode();
-}
-
-void setMode(RVLDeviceMode mode) {
-  rvl::setDeviceMode(mode);
-  if (deviceModeChangeCallback != NULL) {
-    deviceModeChangeCallback(mode);
-  }
-}
-
-RVLWaveSettings* getWaveSettings() {
-  return rvl::getWaveSettings();
-}
-
-void setWaveSettings(RVLWaveSettings* settings) {
-  rvl::setWaveSettings(settings);
-}
-
-uint32_t getAnimationClock() {
-  return rvl::getAnimationClock();
-}
-
-uint8_t getChannel() {
-  return rvl::getChannel();
-}
-
-void setChannel(uint8_t channel) {
-  rvl::setChannel(channel);
-}
-
-bool getPowerState() {
-  return rvl::getPowerState();
-}
-
-void setPowerState(bool powerState) {
-  rvl::setPowerState(powerState);
-}
-
-uint8_t getBrightness() {
-  return rvl::getBrightness();
-}
-
-void setBrightness(uint8_t brightness) {
-  rvl::setBrightness(brightness);
-}
-
-bool getSynchronizationState() {
-  return rvl::getSynchronizationState();
-}
-
-void onConnectionStateChanged(void (*callback)(bool connected)) {
-  connectionStateChangeCallback = callback;
-}
-
-void onControlledStateChanged(void (*callback)(bool controlled)) {
-  controlledStateChangeCallback = callback;
-}
-
-void onModeChanged(void (*callback)(RVLDeviceMode mode)) {
-  deviceModeChangeCallback = callback;
-}
-
-void onPowerStateChanged(void (*callback)(bool powerState)) {
-  platform->setOnPowerStateUpdatedCallback(callback);
-}
-
-void onBrightnessChanged(void (*callback)(uint8_t brightness)) {
-  platform->setOnBrightnessUpdatedCallback(callback);
-}
-
-void onSynchronizationStateChage(void (*callback)(bool synchronized)) {
-  platform->setOnSynchronizationStateUpdatedCallback(callback);
 }
 
 }  // namespace RVLWifiInterface
