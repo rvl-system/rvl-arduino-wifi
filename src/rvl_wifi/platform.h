@@ -39,9 +39,6 @@ class Platform : public RVLPlatformInterface {
   void onSynchronizationStateUpdated();
 
  public:
-  uint16_t getDeviceId();
-  bool isNetworkAvailable();
-
   void setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings));
   void setOnPowerStateUpdatedCallback(void (*callback)(bool powerState));
   void setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightness));
@@ -69,6 +66,8 @@ class Transport : public RVLTransportInterface {
   void read(uint8_t* buffer, uint16_t length);
 
   bool isConnected();
+  bool isNetworkAvailable();
+  uint16_t getDeviceId();
 };
 
 void setConnectedState(bool connectedState);

@@ -30,14 +30,6 @@ namespace RVLWifiPlatform {
 
 // Platform implementation
 
-uint16_t Platform::getDeviceId() {
-  return WiFi.localIP()[3];
-}
-
-bool Platform::isNetworkAvailable() {
-  return WiFi.status() == WL_CONNECTED;
-}
-
 void Platform::onWaveSettingsUpdated() {
   RVLPlatformInterface::onWaveSettingsUpdated();
   if (this->waveSettingsUpdatedCallback != NULL) {
@@ -160,6 +152,14 @@ void setConnectedState(bool connectedState) {
 
 bool Transport::isConnected() {
   return connected;
+}
+
+bool Transport::isNetworkAvailable() {
+  return WiFi.status() == WL_CONNECTED;
+}
+
+uint16_t Transport::getDeviceId() {
+  return WiFi.localIP()[3];
 }
 
 }  // namespace RVLWifiPlatform
