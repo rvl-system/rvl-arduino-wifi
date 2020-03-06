@@ -30,10 +30,6 @@ namespace RVLWifiPlatform {
 
 // Platform implementation
 
-uint32_t Platform::getLocalTime() {
-  return millis();
-}
-
 uint16_t Platform::getDeviceId() {
   return WiFi.localIP()[3];
 }
