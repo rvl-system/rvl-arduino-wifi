@@ -101,54 +101,54 @@ void loop() {
 }
 
 RVLDeviceMode getMode() {
-  return platform->getDeviceMode();
+  return rvl::getDeviceMode();
 }
 
 void setMode(RVLDeviceMode mode) {
-  platform->setDeviceMode(mode);
+  rvl::setDeviceMode(mode);
   if (deviceModeChangeCallback != NULL) {
     deviceModeChangeCallback(mode);
   }
 }
 
 RVLWaveSettings* getWaveSettings() {
-  return platform->getWaveSettings();
+  return rvl::getWaveSettings();
 }
 
 void setWaveSettings(RVLWaveSettings* settings) {
-  platform->setWaveSettings(settings);
+  rvl::setWaveSettings(settings);
 }
 
 uint32_t getAnimationClock() {
-  return platform->getAnimationClock();
+  return rvl::getAnimationClock();
 }
 
 uint8_t getChannel() {
-  return platform->getChannel();
+  return rvl::getChannel();
 }
 
 void setChannel(uint8_t channel) {
-  platform->setChannel(channel);
+  rvl::setChannel(channel);
 }
 
 bool getPowerState() {
-  return platform->getPowerState();
+  return rvl::getPowerState();
 }
 
 void setPowerState(bool powerState) {
-  platform->setPowerState(powerState);
+  rvl::setPowerState(powerState);
 }
 
 uint8_t getBrightness() {
-  return platform->getBrightness();
+  return rvl::getBrightness();
 }
 
 void setBrightness(uint8_t brightness) {
-  platform->setBrightness(brightness);
+  rvl::setBrightness(brightness);
 }
 
 bool getSynchronizationState() {
-  return platform->getSynchronizationState();
+  return rvl::getSynchronizationState();
 }
 
 void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {

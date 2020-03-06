@@ -33,7 +33,7 @@ namespace RVLWifiPlatform {
 void Platform::onWaveSettingsUpdated() {
   RVLPlatformInterface::onWaveSettingsUpdated();
   if (this->waveSettingsUpdatedCallback != NULL) {
-    this->waveSettingsUpdatedCallback(this->getWaveSettings());
+    this->waveSettingsUpdatedCallback(rvl::getWaveSettings());
   }
 }
 
@@ -44,7 +44,7 @@ void Platform::setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings
 void Platform::onPowerStateUpdated() {
   RVLPlatformInterface::onPowerStateUpdated();
   if (this->powerStateUpdatedCallback != NULL) {
-    this->powerStateUpdatedCallback(this->getPowerState());
+    this->powerStateUpdatedCallback(rvl::getPowerState());
   }
 }
 
@@ -55,7 +55,7 @@ void Platform::setOnPowerStateUpdatedCallback(void (*callback)(bool powerState))
 void Platform::onBrightnessUpdated() {
   RVLPlatformInterface::onBrightnessUpdated();
   if (this->brightnessUpdatedCallback) {
-    this->brightnessUpdatedCallback(this->getBrightness());
+    this->brightnessUpdatedCallback(rvl::getBrightness());
   }
 }
 
@@ -66,7 +66,7 @@ void Platform::setOnBrightnessUpdatedCallback(void (*callback)(uint8_t brightnes
 void Platform::onSynchronizationStateUpdated() {
   RVLPlatformInterface::onSynchronizationStateUpdated();
   if (this->synchronizationStateUpdatedCallback) {
-    this->synchronizationStateUpdatedCallback(this->getSynchronizationState());
+    this->synchronizationStateUpdatedCallback(rvl::getSynchronizationState());
   }
 }
 
