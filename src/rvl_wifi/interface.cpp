@@ -151,10 +151,6 @@ bool getSynchronizationState() {
   return rvl::getSynchronizationState();
 }
 
-void onWaveSettingsUpdated(void (*callback)(RVLWaveSettings* settings)) {
-  platform->setOnWaveSettingsUpdatedCallback(callback);
-}
-
 void onConnectionStateChanged(void (*callback)(bool connected)) {
   connectionStateChangeCallback = callback;
 }

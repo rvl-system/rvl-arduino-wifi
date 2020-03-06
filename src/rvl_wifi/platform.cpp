@@ -30,17 +30,6 @@ namespace RVLWifiPlatform {
 
 // Platform implementation
 
-void Platform::onWaveSettingsUpdated() {
-  RVLPlatformInterface::onWaveSettingsUpdated();
-  if (this->waveSettingsUpdatedCallback != NULL) {
-    this->waveSettingsUpdatedCallback(rvl::getWaveSettings());
-  }
-}
-
-void Platform::setOnWaveSettingsUpdatedCallback(void (*callback)(RVLWaveSettings* settings)) {
-  this->waveSettingsUpdatedCallback = callback;
-}
-
 void Platform::onPowerStateUpdated() {
   RVLPlatformInterface::onPowerStateUpdated();
   if (this->powerStateUpdatedCallback != NULL) {

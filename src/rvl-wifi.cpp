@@ -76,10 +76,6 @@ bool RVLGetSynchronizationState() {
   return RVLWifiInterface::getSynchronizationState();
 }
 
-void RVLOnWaveSettingsUpdate(void (*callback)(RVLWaveSettings* settings)) {
-  RVLWifiInterface::onWaveSettingsUpdated(callback);
-}
-
 void RVLOnConnectionStateChanged(void (*callback)(bool connected)) {
   RVLWifiInterface::onConnectionStateChanged(callback);
 }
