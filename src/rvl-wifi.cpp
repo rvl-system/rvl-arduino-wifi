@@ -43,7 +43,7 @@ uint16_t port;
 bool connected = false;
 void (*connectionStateChangeCallback)(bool connected) = NULL;
 void (*controlledStateChangeCallback)(bool connected) = NULL;
-void (*deviceModeChangeCallback)(RVLDeviceMode mode) = NULL;
+void (*deviceModeChangeCallback)(rvl::DeviceMode mode) = NULL;
 
 Transport::Transport(const char* newssid, const char* newpassword, uint16_t newport) {
   ssid = newssid;

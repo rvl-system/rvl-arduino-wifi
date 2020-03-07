@@ -25,7 +25,7 @@ along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace RVLWifi {
 
-class Transport : public RVLTransport {
+class Transport : public rvl::Transport {
  public:
   Transport(const char* newssid, const char* newpassword, uint16_t newport);
   void loop();
