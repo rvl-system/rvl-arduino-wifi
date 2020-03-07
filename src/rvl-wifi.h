@@ -17,21 +17,19 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RVL_WIFI_PLATFORM_H_
-#define RVL_WIFI_PLATFORM_H_
+#ifndef RVL_WIFI_H_
+#define RVL_WIFI_H_
 
 #include <WiFiUdp.h>
 #include <rvl.h>
 
-namespace RVLWifiPlatform {
+namespace RVLWifi {
 
-class Transport : public RVLTransportInterface {
- private:
-  WiFiUDP* udp;
-  uint16_t port;
-
+class Transport : public RVLTransport {
  public:
-  Transport(WiFiUDP* udp, uint16_t port);
+  Transport(const char* newssid, const char* newpassword, uint16_t newport);
+  void loop();
+
   void beginWrite(uint8_t destination);
   void write8(uint8_t data);
   void write16(uint16_t data);
@@ -46,12 +44,11 @@ class Transport : public RVLTransportInterface {
   void read(uint8_t* buffer, uint16_t length);
 
   bool isConnected();
-  bool isNetworkAvailable();
   uint16_t getDeviceId();
 };
 
 void setConnectedState(bool connectedState);
 
-}  // namespace RVLWifiPlatform
+}  // namespace RVLWifi
 
-#endif  // RVL_WIFI_PLATFORM_H_
+#endif  // RVL_WIFI_H_
