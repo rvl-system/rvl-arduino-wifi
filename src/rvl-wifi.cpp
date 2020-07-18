@@ -93,38 +93,59 @@ void Transport::loop() {
 
 // Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
 void Transport::beginWrite(uint8_t destination) {
+  IPAddress ip;
   // We don't have real multicast, so we fall back to broadcast
   if (destination >= 240) {
-    IPAddress ip(255, 255, 255, 255);
-    udp.beginPacket(ip, port);
+    ip[0] = 255;
+    ip[1] = 255;
+    ip[2] = 255;
+    ip[3] = 255;
   } else {
-    IPAddress ip(WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], destination);
-    udp.beginPacket(ip, port);
+    ip[0] = WiFi.localIP()[0];
+    ip[1] = WiFi.localIP()[1];
+    ip[2] = WiFi.localIP()[2];
+    ip[3] = destination;
+  }
+  if (!udp.beginPacket(ip, port)) {
+    rvl::error("Error beginning packet to destination %d (%d.%d.%d.%d:%d)",
+      destination, ip[0], ip[1], ip[2], ip[3], port);
+  }
+}
+
+void udpWrite(uint8_t data) {
+  uint8_t result = udp.write(data);
+  if (result != 1) {
+    rvl::error("Error sending byte. Expected result of 1, but got %d", result);
   }
 }
 
 void Transport::write8(uint8_t data) {
-  udp.write(data);
+  udpWrite(data);
 }
 
 void Transport::write16(uint16_t data) {
-  udp.write(data >> 8);
-  udp.write(data & 0xFF);
+  udpWrite(data >> 8);
+  udpWrite(data & 0xFF);
 }
 
 void Transport::write32(uint32_t data) {
-  udp.write(data >> 24);
-  udp.write(data >> 16 & 0xFF);
-  udp.write(data >> 8 & 0xFF);
-  udp.write(data & 0xFF);
+  udpWrite(data >> 24);
+  udpWrite(data >> 16 & 0xFF);
+  udpWrite(data >> 8 & 0xFF);
+  udpWrite(data & 0xFF);
 }
 
 void Transport::write(uint8_t* data, uint16_t length) {
-  udp.write(data, length);
+  size_t written = udp.write(data, length);
+  if (written != length) {
+    rvl::error("Error sending buffer. Expected result of %d, but wrote %d", length, written);
+  }
 }
 
 void Transport::endWrite() {
-  udp.endPacket();
+  if (!udp.endPacket()) {
+    rvl::error("Could not send packet");
+  }
 }
 
 uint16_t Transport::parsePacket() {
