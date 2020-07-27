@@ -45,7 +45,7 @@ void (*connectionStateChangeCallback)(bool connected) = NULL;
 void (*controlledStateChangeCallback)(bool connected) = NULL;
 void (*deviceModeChangeCallback)(rvl::DeviceMode mode) = NULL;
 
-Transport::Transport(const char* newssid, const char* newpassword, uint16_t newport) {
+System::System(const char* newssid, const char* newpassword, uint16_t newport) {
   ssid = newssid;
   password = newpassword;
   port = newport;
@@ -54,7 +54,7 @@ Transport::Transport(const char* newssid, const char* newpassword, uint16_t newp
 #endif
 }
 
-void Transport::loop() {
+void System::loop() {
   switch (state) {
     case STATE_DISCONNECTED:
       rvl::info("Connecting to %s", ssid);
@@ -81,6 +81,7 @@ void Transport::loop() {
       if (WiFi.status() != WL_CONNECTED) {
         rvl::info("Disconnected from WiFi, retrying");
         state = STATE_DISCONNECTED;
+        udp.stop();
         this->setConnectedState(false);
         if (connectionStateChangeCallback != NULL) {
           connectionStateChangeCallback(false);
@@ -92,7 +93,7 @@ void Transport::loop() {
 }
 
 // Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
-void Transport::beginWrite(uint8_t destination) {
+void System::beginWrite(uint8_t destination) {
   IPAddress ip;
   // We don't have real multicast, so we fall back to broadcast
   if (destination >= 240) {
@@ -119,51 +120,51 @@ void udpWrite(uint8_t data) {
   }
 }
 
-void Transport::write8(uint8_t data) {
+void System::write8(uint8_t data) {
   udpWrite(data);
 }
 
-void Transport::write16(uint16_t data) {
+void System::write16(uint16_t data) {
   udpWrite(data >> 8);
   udpWrite(data & 0xFF);
 }
 
-void Transport::write32(uint32_t data) {
+void System::write32(uint32_t data) {
   udpWrite(data >> 24);
   udpWrite(data >> 16 & 0xFF);
   udpWrite(data >> 8 & 0xFF);
   udpWrite(data & 0xFF);
 }
 
-void Transport::write(uint8_t* data, uint16_t length) {
+void System::write(uint8_t* data, uint16_t length) {
   size_t written = udp.write(data, length);
   if (written != length) {
     rvl::error("Error sending buffer. Expected result of %d, but wrote %d", length, written);
   }
 }
 
-void Transport::endWrite() {
+void System::endWrite() {
   if (!udp.endPacket()) {
     rvl::error("Could not send packet");
   }
 }
 
-uint16_t Transport::parsePacket() {
+uint16_t System::parsePacket() {
   return udp.parsePacket();
 }
 
-uint8_t Transport::read8() {
+uint8_t System::read8() {
   return udp.read();
 }
 
-uint16_t Transport::read16() {
+uint16_t System::read16() {
   uint16_t val = 0;
   val |= udp.read() << 8;
   val |= udp.read();
   return val;
 }
 
-uint32_t Transport::read32() {
+uint32_t System::read32() {
   uint32_t val = 0;
   val |= udp.read() << 24;
   val |= udp.read() << 16;
@@ -172,12 +173,24 @@ uint32_t Transport::read32() {
   return val;
 }
 
-void Transport::read(uint8_t* buffer, uint16_t length) {
+void System::read(uint8_t* buffer, uint16_t length) {
   udp.read(buffer, length);
 }
 
-uint16_t Transport::getDeviceId() {
+uint16_t System::getDeviceId() {
   return WiFi.localIP()[3];
+}
+
+uint32_t System::localClock() {
+  return millis();
+}
+
+void System::print(const char* str) {
+  Serial.print(str);
+}
+
+void System::println(const char* str) {
+  Serial.println(str);
 }
 
 }  // namespace RVLWifi
