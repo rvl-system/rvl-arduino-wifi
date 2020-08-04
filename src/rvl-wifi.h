@@ -43,7 +43,6 @@ class System : public rvl::System {
   uint32_t read32();
   void read(uint8_t* buffer, uint16_t length);
 
-  bool isConnected();
   uint16_t getDeviceId();
 
   uint32_t localClock();
