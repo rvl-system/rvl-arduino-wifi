@@ -42,6 +42,7 @@ class System : public rvl::System {
   uint16_t read16();
   uint32_t read32();
   void read(uint8_t* buffer, uint16_t length);
+  void endRead();
 
   uint16_t getDeviceId();
 

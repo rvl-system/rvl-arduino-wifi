@@ -92,7 +92,10 @@ void System::loop() {
   }
 }
 
-// Destination: 1 byte = 0-239: individual device, 240-254: multicast, 255: broadcast
+// Destination: 1 byte
+// 0-239: individual device
+// 240-254: multicast
+// 255: broadcast
 void System::beginWrite(uint8_t destination) {
   IPAddress ip;
   // We don't have real multicast, so we fall back to broadcast
@@ -139,7 +142,9 @@ void System::write32(uint32_t data) {
 void System::write(uint8_t* data, uint16_t length) {
   size_t written = udp.write(data, length);
   if (written != length) {
-    rvl::error("Error sending buffer. Expected result of %d, but wrote %d", length, written);
+    rvl::error(
+      "Error sending buffer. Expected result of %d, but wrote %d",
+      length, written);
   }
 }
 
@@ -175,6 +180,15 @@ uint32_t System::read32() {
 
 void System::read(uint8_t* buffer, uint16_t length) {
   udp.read(buffer, length);
+}
+
+void System::endRead() {
+  int count = udp.available();
+  if (count) {
+    char* buffer = new char(count);
+    udp.read(buffer, count);
+    delete buffer;
+  }
 }
 
 uint16_t System::getDeviceId() {
