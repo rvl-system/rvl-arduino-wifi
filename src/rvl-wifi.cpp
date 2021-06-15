@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
 #include <Arduino.h>
+#include <string.h>
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #else
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #endif
-#include "./rvl-wifi.h"
+#include "./rvl-wifi.hpp"
 
 namespace RVLWifi {
 
@@ -50,45 +50,42 @@ System::System(const char* newssid, const char* newpassword, uint16_t newport) {
   password = newpassword;
   port = newport;
 #ifdef ESP8266
-  WiFi.setSleepMode(WIFI_NONE_SLEEP);   // Helps keep LEDs from flickering
+  WiFi.setSleepMode(WIFI_NONE_SLEEP); // Helps keep LEDs from flickering
 #endif
 }
 
 void System::loop() {
   switch (state) {
-    case STATE_DISCONNECTED:
-      rvl::info("Connecting to %s", ssid);
-      WiFi.begin(ssid, password);
-      state = STATE_CONNECTING;
+  case STATE_DISCONNECTED:
+    rvl::info("Connecting to %s", ssid);
+    WiFi.begin(ssid, password);
+    state = STATE_CONNECTING;
+    this->setConnectedState(false);
+    // Fall through here instead of breaking
+  case STATE_CONNECTING:
+    if (WiFi.status() == WL_CONNECTED) {
+      rvl::info("Connected to WiFi with address %d.%d.%d.%d", WiFi.localIP()[0],
+          WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
+      udp.begin(port);
+      state = STATE_CONNECTED;
+      this->setConnectedState(true);
+      if (connectionStateChangeCallback != NULL) {
+        connectionStateChangeCallback(true);
+      }
+    }
+    break;
+  case STATE_CONNECTED:
+    if (WiFi.status() != WL_CONNECTED) {
+      rvl::info("Disconnected from WiFi, retrying");
+      state = STATE_DISCONNECTED;
+      udp.stop();
       this->setConnectedState(false);
-      // Fall through here instead of breaking
-    case STATE_CONNECTING:
-      if (WiFi.status() == WL_CONNECTED) {
-        rvl::info("Connected to WiFi with address %d.%d.%d.%d",
-          WiFi.localIP()[0],
-          WiFi.localIP()[1],
-          WiFi.localIP()[2],
-          WiFi.localIP()[3]);
-        udp.begin(port);
-        state = STATE_CONNECTED;
-        this->setConnectedState(true);
-        if (connectionStateChangeCallback != NULL) {
-          connectionStateChangeCallback(true);
-        }
+      if (connectionStateChangeCallback != NULL) {
+        connectionStateChangeCallback(false);
       }
       break;
-    case STATE_CONNECTED:
-      if (WiFi.status() != WL_CONNECTED) {
-        rvl::info("Disconnected from WiFi, retrying");
-        state = STATE_DISCONNECTED;
-        udp.stop();
-        this->setConnectedState(false);
-        if (connectionStateChangeCallback != NULL) {
-          connectionStateChangeCallback(false);
-        }
-        break;
-      }
-      break;
+    }
+    break;
   }
 }
 
@@ -112,7 +109,7 @@ void System::beginWrite(uint8_t destination) {
   }
   if (!udp.beginPacket(ip, port)) {
     rvl::error("Error beginning packet to destination %d (%d.%d.%d.%d:%d)",
-      destination, ip[0], ip[1], ip[2], ip[3], port);
+        destination, ip[0], ip[1], ip[2], ip[3], port);
   }
 }
 
@@ -142,9 +139,8 @@ void System::write32(uint32_t data) {
 void System::write(uint8_t* data, uint16_t length) {
   size_t written = udp.write(data, length);
   if (written != length) {
-    rvl::error(
-      "Error sending buffer. Expected result of %d, but wrote %d",
-      length, written);
+    rvl::error("Error sending buffer. Expected result of %d, but wrote %d",
+        length, written);
   }
 }
 
@@ -207,4 +203,4 @@ void System::println(const char* str) {
   Serial.println(str);
 }
 
-}  // namespace RVLWifi
+} // namespace RVLWifi

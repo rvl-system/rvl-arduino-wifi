@@ -21,12 +21,12 @@ along with RVL Arduino Wifi.  If not, see <http://www.gnu.org/licenses/>.
 #define RVL_WIFI_H_
 
 #include <WiFiUdp.h>
-#include <rvl.h>
+#include <rvl.hpp>
 
 namespace RVLWifi {
 
 class System : public rvl::System {
- public:
+public:
   System(const char* newssid, const char* newpassword, uint16_t newport);
   void loop();
 
@@ -53,6 +53,6 @@ class System : public rvl::System {
 
 void setConnectedState(bool connectedState);
 
-}  // namespace RVLWifi
+} // namespace RVLWifi
 
-#endif  // RVL_WIFI_H_
+#endif // RVL_WIFI_H_
