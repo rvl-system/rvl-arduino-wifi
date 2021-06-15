@@ -180,7 +180,7 @@ void System::read(uint8_t* buffer, uint16_t length) {
 
 void System::endRead() {
   int count = udp.available();
-  if (count) {
+  if (count > 0) {
     char* buffer = new char(count);
     udp.read(buffer, count);
     delete buffer;
