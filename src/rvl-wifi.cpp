@@ -178,15 +178,6 @@ void System::read(uint8_t* buffer, uint16_t length) {
   udp.read(buffer, length);
 }
 
-void System::endRead() {
-  int count = udp.available();
-  if (count > 0) {
-    char* buffer = new char(count);
-    udp.read(buffer, count);
-    delete buffer;
-  }
-}
-
 uint16_t System::getDeviceId() {
   return WiFi.localIP()[3];
 }
