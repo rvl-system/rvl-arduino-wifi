@@ -28,27 +28,27 @@ namespace RVLWifi {
 class System : public rvl::System {
 public:
   System(const char* newssid, const char* newpassword, uint16_t newport);
-  void loop();
+  void loop() override;
 
-  void beginWrite(uint8_t destination);
-  void write8(uint8_t data);
-  void write16(uint16_t data);
-  void write32(uint32_t data);
-  void write(uint8_t* data, uint16_t length);
-  void endWrite();
+  void beginWrite(uint8_t destination) override;
+  void write8(uint8_t data) override;
+  void write16(uint16_t data) override;
+  void write32(uint32_t data) override;
+  void write(uint8_t* data, uint16_t length) override;
+  void endWrite() override;
 
-  uint16_t parsePacket();
-  uint8_t read8();
-  uint16_t read16();
-  uint32_t read32();
-  void read(uint8_t* buffer, uint16_t length);
-  void endRead();
+  uint16_t parsePacket() override;
+  uint8_t read8() override;
+  uint16_t read16() override;
+  uint32_t read32() override;
+  void read(uint8_t* buffer, uint16_t length) override;
+  void endRead() override;
 
-  uint16_t getDeviceId();
+  uint16_t getDeviceId() override;
 
-  uint32_t localClock();
-  void print(const char* str);
-  void println(const char* str);
+  uint32_t localClock() override;
+  void print(const char* str) override;
+  void println(const char* str) override;
 };
 
 void setConnectedState(bool connectedState);

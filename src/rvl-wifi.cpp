@@ -35,7 +35,7 @@ namespace RVLWifi {
 
 uint8_t state = STATE_DISCONNECTED;
 
-WiFiUDP udp;
+WiFiUDP udp; // NOLINT
 
 const char* ssid;
 const char* password;
@@ -107,7 +107,7 @@ void System::beginWrite(uint8_t destination) {
     ip[2] = WiFi.localIP()[2];
     ip[3] = destination;
   }
-  if (!udp.beginPacket(ip, port)) {
+  if (udp.beginPacket(ip, port) == 0) {
     rvl::error("Error beginning packet to destination %d (%d.%d.%d.%d:%d)",
         destination, ip[0], ip[1], ip[2], ip[3], port);
   }
@@ -145,7 +145,7 @@ void System::write(uint8_t* data, uint16_t length) {
 }
 
 void System::endWrite() {
-  if (!udp.endPacket()) {
+  if (udp.endPacket() == 0) {
     rvl::error("Could not send packet");
   }
 }
@@ -176,6 +176,10 @@ uint32_t System::read32() {
 
 void System::read(uint8_t* buffer, uint16_t length) {
   udp.read(buffer, length);
+}
+
+void System::endRead() {
+  udp.flush();
 }
 
 uint16_t System::getDeviceId() {
