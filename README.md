@@ -1,4 +1,4 @@
-# RVL Arduino Wifi
+# RVL WiFi
 An implementation of RVL based on the Arduino framework
 
 # License
