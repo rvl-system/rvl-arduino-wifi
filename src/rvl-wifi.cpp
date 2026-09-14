@@ -150,8 +150,15 @@ void System::endWrite() {
   }
 }
 
+uint32_t packetArrivalClock = UINT32_MAX;
+
 uint16_t System::parsePacket() {
-  return udp.parsePacket();
+  uint16_t size = udp.parsePacket();
+  if (size > 0) {
+    // For a polling transport, parse time is the best arrival estimate we have
+    packetArrivalClock = millis();
+  }
+  return size;
 }
 
 uint8_t System::read8() {
@@ -180,6 +187,11 @@ void System::read(uint8_t* buffer, uint16_t length) {
 
 void System::endRead() {
   udp.flush();
+  packetArrivalClock = UINT32_MAX;
+}
+
+uint32_t System::packetArrivalTime() {
+  return packetArrivalClock;
 }
 
 uint16_t System::getDeviceId() {

@@ -43,6 +43,7 @@ public:
   uint32_t read32() override;
   void read(uint8_t* buffer, uint16_t length) override;
   void endRead() override;
+  uint32_t packetArrivalTime() override;
 
   uint16_t getDeviceId() override;
 

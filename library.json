@@ -1,6 +1,6 @@
 {
-  "name": "RVLMessaging",
-  "description": "A standalone, dependecy-less library that implements the RVL Firmware messaging stack for use with Arduino, PlatformIO, and WASM",
+  "name": "RVLArduinoWiFi",
+  "description": "An implementation of RVL based on the Arduino framework",
   "keywords": "led synchronization, clock synchronization, messaging",
   "authors": {
     "name": "Bryan Hughes",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nebrius/RVLMessaging.git"
+    "url": "https://github.com/rvl-system/rvl-arduino-wifi.git"
   },
   "version": "1.0.0",
   "license": "GPL-3.0"
