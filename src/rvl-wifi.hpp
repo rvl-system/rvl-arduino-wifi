@@ -47,6 +47,8 @@ public:
 
   uint16_t getDeviceId() override;
 
+  bool isLinkUp() override;
+
   uint32_t localClock() override;
   void print(const char* str) override;
   void println(const char* str) override;

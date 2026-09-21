@@ -198,6 +198,10 @@ uint16_t System::getDeviceId() {
   return WiFi.localIP()[3];
 }
 
+bool System::isLinkUp() {
+  return WiFi.status() == WL_CONNECTED;
+}
+
 uint32_t System::localClock() {
   return millis();
 }
