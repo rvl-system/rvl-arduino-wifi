@@ -20,41 +20,25 @@ along with RVL WiFi.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef RVL_WIFI_H_
 #define RVL_WIFI_H_
 
-#include <WiFiUdp.h>
 #include <rvl.hpp>
 
 namespace RVLWifi {
 
 class System : public rvl::System {
 public:
-  System(const char* newssid, const char* newpassword, uint16_t newport);
+  System(const char* newssid, const char* newpassword);
   void loop() override;
 
-  void beginWrite(uint8_t destination) override;
-  void write8(uint8_t data) override;
-  void write16(uint16_t data) override;
-  void write32(uint32_t data) override;
-  void write(uint8_t* data, uint16_t length) override;
-  void endWrite() override;
-
-  uint16_t parsePacket() override;
-  uint8_t read8() override;
-  uint16_t read16() override;
-  uint32_t read32() override;
-  void read(uint8_t* buffer, uint16_t length) override;
-  void endRead() override;
-  uint32_t packetArrivalTime() override;
-
-  uint16_t getDeviceId() override;
+  rvl::System::Animation& animation() override;
+  rvl::System::Infrastructure& infrastructure() override;
 
   bool isLinkUp() override;
 
   uint32_t localClock() override;
+  uint32_t random() override;
   void print(const char* str) override;
   void println(const char* str) override;
 };
-
-void setConnectedState(bool connectedState);
 
 } // namespace RVLWifi
 

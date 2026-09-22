@@ -23,9 +23,11 @@ along with RVL WiFi.  If not, see <http://www.gnu.org/licenses/>.
 #include <ESP8266WiFi.h>
 #else
 #include <WiFi.h>
-#include <WiFiUdp.h>
 #endif
+#include <WiFiUdp.h>
 #include "./rvl-wifi.hpp"
+
+#include <rvl/config.hpp>
 
 namespace RVLWifi {
 
@@ -33,22 +35,158 @@ namespace RVLWifi {
 #define STATE_CONNECTING 1
 #define STATE_CONNECTED 2
 
-uint8_t state = STATE_DISCONNECTED;
+// Everything both protocols share, implemented once. It overrides the pure
+// virtuals of whichever rvl::System interface it is given, since their read and
+// write halves have the same signatures. Unlike the ESP32 transport this one is
+// polled, so there is no queue and no network task to hand packets across
+template <class Base> class UdpEndpoint : public Base {
+public:
+  UdpEndpoint(uint16_t port, const char* name) : port(port), name(name) {
+  }
 
-WiFiUDP udp; // NOLINT
+  bool open() {
+    return udp.begin(port) != 0;
+  }
+
+  void close() {
+    udp.stop();
+    packetArrivalClock = UINT32_MAX;
+  }
+
+  void write8(uint8_t data) override {
+    writeByte(data);
+  }
+
+  void write16(uint16_t data) override {
+    writeByte(data >> 8);
+    writeByte(data & 0xFF);
+  }
+
+  void write32(uint32_t data) override {
+    writeByte(data >> 24);
+    writeByte(data >> 16 & 0xFF);
+    writeByte(data >> 8 & 0xFF);
+    writeByte(data & 0xFF);
+  }
+
+  void write(uint8_t* data, uint16_t length) override {
+    size_t written = udp.write(data, length);
+    if (written != length) {
+      rvl::error("Error sending buffer. Expected result of %d, but wrote %d",
+          length, written);
+    }
+  }
+
+  void endWrite() override {
+    if (udp.endPacket() == 0) {
+      rvl::error("Could not send %s packet", name);
+    }
+  }
+
+  uint16_t parsePacket() override {
+    uint16_t size = udp.parsePacket();
+    if (size > 0) {
+      // For a polling transport, parse time is the best arrival estimate we
+      // have
+      packetArrivalClock = millis();
+    }
+    return size;
+  }
+
+  uint8_t read8() override {
+    return udp.read();
+  }
+
+  uint16_t read16() override {
+    uint16_t val = 0;
+    val |= udp.read() << 8;
+    val |= udp.read();
+    return val;
+  }
+
+  uint32_t read32() override {
+    uint32_t val = 0;
+    val |= udp.read() << 24;
+    val |= udp.read() << 16;
+    val |= udp.read() << 8;
+    val |= udp.read();
+    return val;
+  }
+
+  void read(uint8_t* buffer, uint16_t length) override {
+    udp.read(buffer, length);
+  }
+
+  void endRead() override {
+    udp.flush();
+    packetArrivalClock = UINT32_MAX;
+  }
+
+  uint32_t packetArrivalTime() override {
+    return packetArrivalClock;
+  }
+
+protected:
+  // Every send is a broadcast. RVL never addresses a node, and the receiving
+  // side filters on the header
+  void beginPacket() {
+    if (udp.beginPacket(IPAddress(255, 255, 255, 255), port) == 0) {
+      rvl::error("Error beginning %s packet", name);
+    }
+  }
+
+private:
+  void writeByte(uint8_t data) {
+    uint8_t result = udp.write(data);
+    if (result != 1) {
+      rvl::error(
+          "Error sending byte. Expected result of 1, but got %d", result);
+    }
+  }
+
+  uint16_t port;
+  const char* name;
+  WiFiUDP udp;
+  uint32_t packetArrivalClock = UINT32_MAX;
+};
+
+class AnimationEndpoint : public UdpEndpoint<rvl::System::Animation> {
+public:
+  using UdpEndpoint::UdpEndpoint;
+
+  void beginChannelWrite() override {
+    beginPacket();
+  }
+};
+
+class InfrastructureEndpoint
+    : public UdpEndpoint<rvl::System::Infrastructure> {
+public:
+  using UdpEndpoint::UdpEndpoint;
+
+  void beginBroadcastWrite() override {
+    beginPacket();
+  }
+
+  // The coordinator is the access point, so a broadcast reaches it with the
+  // same MAC-layer retries a unicast would get
+  void beginCoordinatorWrite() override {
+    beginPacket();
+  }
+};
+
+AnimationEndpoint animationEndpoint(RVLA_PORT, "Animation");
+InfrastructureEndpoint infrastructureEndpoint(RVLI_PORT, "Infrastructure");
+
+uint8_t state = STATE_DISCONNECTED;
+bool socketErrorLogged = false;
 
 const char* ssid;
 const char* password;
-uint16_t port;
-bool connected = false;
-void (*connectionStateChangeCallback)(bool connected) = NULL;
-void (*controlledStateChangeCallback)(bool connected) = NULL;
-void (*deviceModeChangeCallback)(rvl::DeviceMode mode) = NULL;
 
-System::System(const char* newssid, const char* newpassword, uint16_t newport) {
+System::System(const char* newssid, const char* newpassword) {
   ssid = newssid;
   password = newpassword;
-  port = newport;
 #ifdef ESP8266
   WiFi.setSleepMode(WIFI_NONE_SLEEP); // Helps keep LEDs from flickering
 #endif
@@ -60,142 +198,50 @@ void System::loop() {
     rvl::info("Connecting to %s", ssid);
     WiFi.begin(ssid, password);
     state = STATE_CONNECTING;
-    this->setConnectedState(false);
+    socketErrorLogged = false;
+    rvl::setLinkUpState(false);
+    rvl::setDeviceId(UNASSIGNED_DEVICE_ID);
     // Fall through here instead of breaking
   case STATE_CONNECTING:
-    if (WiFi.status() == WL_CONNECTED) {
-      rvl::info("Connected to WiFi with address %d.%d.%d.%d", WiFi.localIP()[0],
-          WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
-      udp.begin(port);
-      state = STATE_CONNECTED;
-      this->setConnectedState(true);
-      if (connectionStateChangeCallback != NULL) {
-        connectionStateChangeCallback(true);
-      }
+    if (WiFi.status() != WL_CONNECTED) {
+      break;
     }
+    // Stay here and retry next loop if either socket fails to open. Reporting
+    // the link up without both would leave the node unable to talk
+    if (!animationEndpoint.open() || !infrastructureEndpoint.open()) {
+      animationEndpoint.close();
+      infrastructureEndpoint.close();
+      if (!socketErrorLogged) {
+        socketErrorLogged = true;
+        rvl::error("Could not open the RVL sockets, retrying");
+      }
+      break;
+    }
+    rvl::info("Connected to WiFi with address %d.%d.%d.%d", WiFi.localIP()[0],
+        WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
+    state = STATE_CONNECTED;
+    rvl::setDeviceId(WiFi.localIP()[3]);
+    rvl::setLinkUpState(true);
     break;
   case STATE_CONNECTED:
     if (WiFi.status() != WL_CONNECTED) {
       rvl::info("Disconnected from WiFi, retrying");
       state = STATE_DISCONNECTED;
-      udp.stop();
-      this->setConnectedState(false);
-      if (connectionStateChangeCallback != NULL) {
-        connectionStateChangeCallback(false);
-      }
-      break;
+      animationEndpoint.close();
+      infrastructureEndpoint.close();
+      rvl::setLinkUpState(false);
+      rvl::setDeviceId(UNASSIGNED_DEVICE_ID);
     }
     break;
   }
 }
 
-// Destination: 1 byte
-// 0-239: individual device
-// 240-254: multicast
-// 255: broadcast
-void System::beginWrite(uint8_t destination) {
-  IPAddress ip;
-  // We don't have real multicast, so we fall back to broadcast
-  if (destination >= 240) {
-    ip[0] = 255;
-    ip[1] = 255;
-    ip[2] = 255;
-    ip[3] = 255;
-  } else {
-    ip[0] = WiFi.localIP()[0];
-    ip[1] = WiFi.localIP()[1];
-    ip[2] = WiFi.localIP()[2];
-    ip[3] = destination;
-  }
-  if (udp.beginPacket(ip, port) == 0) {
-    rvl::error("Error beginning packet to destination %d (%d.%d.%d.%d:%d)",
-        destination, ip[0], ip[1], ip[2], ip[3], port);
-  }
+rvl::System::Animation& System::animation() {
+  return animationEndpoint;
 }
 
-void udpWrite(uint8_t data) {
-  uint8_t result = udp.write(data);
-  if (result != 1) {
-    rvl::error("Error sending byte. Expected result of 1, but got %d", result);
-  }
-}
-
-void System::write8(uint8_t data) {
-  udpWrite(data);
-}
-
-void System::write16(uint16_t data) {
-  udpWrite(data >> 8);
-  udpWrite(data & 0xFF);
-}
-
-void System::write32(uint32_t data) {
-  udpWrite(data >> 24);
-  udpWrite(data >> 16 & 0xFF);
-  udpWrite(data >> 8 & 0xFF);
-  udpWrite(data & 0xFF);
-}
-
-void System::write(uint8_t* data, uint16_t length) {
-  size_t written = udp.write(data, length);
-  if (written != length) {
-    rvl::error("Error sending buffer. Expected result of %d, but wrote %d",
-        length, written);
-  }
-}
-
-void System::endWrite() {
-  if (udp.endPacket() == 0) {
-    rvl::error("Could not send packet");
-  }
-}
-
-uint32_t packetArrivalClock = UINT32_MAX;
-
-uint16_t System::parsePacket() {
-  uint16_t size = udp.parsePacket();
-  if (size > 0) {
-    // For a polling transport, parse time is the best arrival estimate we have
-    packetArrivalClock = millis();
-  }
-  return size;
-}
-
-uint8_t System::read8() {
-  return udp.read();
-}
-
-uint16_t System::read16() {
-  uint16_t val = 0;
-  val |= udp.read() << 8;
-  val |= udp.read();
-  return val;
-}
-
-uint32_t System::read32() {
-  uint32_t val = 0;
-  val |= udp.read() << 24;
-  val |= udp.read() << 16;
-  val |= udp.read() << 8;
-  val |= udp.read();
-  return val;
-}
-
-void System::read(uint8_t* buffer, uint16_t length) {
-  udp.read(buffer, length);
-}
-
-void System::endRead() {
-  udp.flush();
-  packetArrivalClock = UINT32_MAX;
-}
-
-uint32_t System::packetArrivalTime() {
-  return packetArrivalClock;
-}
-
-uint16_t System::getDeviceId() {
-  return WiFi.localIP()[3];
+rvl::System::Infrastructure& System::infrastructure() {
+  return infrastructureEndpoint;
 }
 
 bool System::isLinkUp() {
@@ -204,6 +250,14 @@ bool System::isLinkUp() {
 
 uint32_t System::localClock() {
   return millis();
+}
+
+uint32_t System::random() {
+#ifdef ESP8266
+  return ESP.random();
+#else
+  return esp_random();
+#endif
 }
 
 void System::print(const char* str) {
