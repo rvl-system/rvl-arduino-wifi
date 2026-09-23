@@ -122,10 +122,6 @@ public:
     packetArrivalClock = UINT32_MAX;
   }
 
-  uint32_t packetArrivalTime() override {
-    return packetArrivalClock;
-  }
-
 protected:
   // Every send is a broadcast. RVL never addresses a node, and the receiving
   // side filters on the header
@@ -134,6 +130,8 @@ protected:
       rvl::error("Error beginning %s packet", name);
     }
   }
+
+  uint32_t packetArrivalClock = UINT32_MAX;
 
 private:
   void writeByte(uint8_t data) {
@@ -147,7 +145,6 @@ private:
   uint16_t port;
   const char* name;
   WiFiUDP udp;
-  uint32_t packetArrivalClock = UINT32_MAX;
 };
 
 class AnimationEndpoint : public UdpEndpoint<rvl::System::Animation> {
@@ -172,6 +169,10 @@ public:
   // same MAC-layer retries a unicast would get
   void beginCoordinatorWrite() override {
     beginPacket();
+  }
+
+  uint32_t packetArrivalTime() override {
+    return packetArrivalClock;
   }
 };
 
