@@ -200,7 +200,6 @@ void System::loop() {
     state = STATE_CONNECTING;
     socketErrorLogged = false;
     rvl::setLinkUpState(false);
-    rvl::setDeviceId(UNASSIGNED_DEVICE_ID);
     // Fall through here instead of breaking
   case STATE_CONNECTING:
     if (WiFi.status() != WL_CONNECTED) {
@@ -220,7 +219,6 @@ void System::loop() {
     rvl::info("Connected to WiFi with address %d.%d.%d.%d", WiFi.localIP()[0],
         WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
     state = STATE_CONNECTED;
-    rvl::setDeviceId(WiFi.localIP()[3]);
     rvl::setLinkUpState(true);
     break;
   case STATE_CONNECTED:
@@ -230,7 +228,6 @@ void System::loop() {
       animationEndpoint.close();
       infrastructureEndpoint.close();
       rvl::setLinkUpState(false);
-      rvl::setDeviceId(UNASSIGNED_DEVICE_ID);
     }
     break;
   }
