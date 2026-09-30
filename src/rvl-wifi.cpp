@@ -24,8 +24,8 @@ along with RVL WiFi.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #include <WiFi.h>
 #endif
-#include <WiFiUdp.h>
 #include "./rvl-wifi.hpp"
+#include <WiFiUdp.h>
 
 #include <rvl/config.hpp>
 
@@ -156,8 +156,7 @@ public:
   }
 };
 
-class InfrastructureEndpoint
-    : public UdpEndpoint<rvl::System::Infrastructure> {
+class InfrastructureEndpoint : public UdpEndpoint<rvl::System::Infrastructure> {
 public:
   using UdpEndpoint::UdpEndpoint;
 
