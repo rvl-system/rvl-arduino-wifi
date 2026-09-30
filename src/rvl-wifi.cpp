@@ -41,8 +41,7 @@ namespace RVLWifi {
 // polled, so there is no queue and no network task to hand packets across
 template <class Base> class UdpEndpoint : public Base {
 public:
-  UdpEndpoint(uint16_t port, const char* name) : port(port), name(name) {
-  }
+  UdpEndpoint(uint16_t port, const char* name) : port(port), name(name) {}
 
   bool open() {
     return udp.begin(port) != 0;
