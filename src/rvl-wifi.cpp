@@ -229,6 +229,8 @@ void System::loop() {
       rvl::setLinkUpState(false);
     }
     break;
+  default:
+    break;
   }
 }
 
